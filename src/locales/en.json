@@ -1,18 +1,29 @@
 {
     "create": {
-        "hello": "Scrypta Manent Wallet",
+        "hello": "Create new Scrypta Identity",
         "instructions": "Ready to create a new wallet?",
         "password": {
             "insert": "Select a new password",
             "repeat": "Repeat same password",
-            "wrong": "Passwords doesn't match."
+            "wrong": "Passwords doesn't match.",
+            "empty": "Password can't be empty"
         },
         "recover": "Recover from mnemonic",
         "insertmnemonic": "Insert your 24 words here",
         "recovernow": "Recover now",
+        "showlogins": "Login with existent Identity",
         "label": "Create a label for the wallet",
         "savemnemonic": "Now it's time to save your 24 words, please write it into a paper and save it in a safe place.",
         "create": "Create now",
-        "done": "Done"
+        "done": "Done",
+        "loginwith": "Login with existent identity",
+        "logininstructions": "Choose your backup method",
+        "createnew": "Create new identity",
+        "manentapp": "Manent App",
+        "import": "Import identity",
+        "sidfile": "Stored .sid file",
+        "privkey": "Private key",
+        "cardwallet": "Card Wallet",
+        "backtoselection": "Go back"
     }
 }

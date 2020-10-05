@@ -6,6 +6,9 @@ import Buefy from 'buefy'
 import 'buefy/dist/buefy.css'
 import '../assets/style.scss'
 import VueI18n from 'vue-i18n'
+import VueQrcodeReader from "vue-qrcode-reader";
+ 
+Vue.use(VueQrcodeReader);
 Vue.use(VueI18n)
 Vue.use(Buefy)
 Vue.config.productionTip = false

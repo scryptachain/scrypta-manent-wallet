@@ -1,7 +1,7 @@
 <template>
   <div class="popup">
     <div v-if="!wallet">
-      <Login v-on:logged="logWithWallet" />
+      <Create v-on:logged="logWithWallet" />
     </div>
     <div v-if="wallet">
       <a
@@ -21,10 +21,10 @@
 <script>
 const ScryptaCore = require("@scrypta/core");
 const User = require("../libs/user");
-import Login from "../components/Login.vue";
+import Create from "../components/Create.vue";
 
 export default {
-  components: { Login },
+  components: { Create },
   name: "App",
   data() {
     return {
@@ -60,10 +60,19 @@ export default {
 html {
   padding: 40px 10px !important;
   font-family: "Sen", sans-serif !important;
+  line-height: 1!important;
+}
+body{
+  line-height: 1!important;
 }
 .popup {
   min-width: 350px;
   width: 100%;
   text-align: center;
+}
+.card, .card-content{
+  margin:0!important;
+  padding:0!important;
+  box-shadow:none!important;
 }
 </style>

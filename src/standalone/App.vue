@@ -1,6 +1,9 @@
 <template>
   <div class="popup">
-    <div v-if="!wallet">
+    <div v-if="!wallet && $route.path !== '/login'">
+      <Create v-on:logged="logWithWallet" />
+    </div>
+    <div v-if="!wallet && $route.path === '/login'">
       <Login v-on:logged="logWithWallet" />
     </div>
     <div v-if="wallet">
@@ -16,10 +19,11 @@
 <script>
 const ScryptaCore = require("@scrypta/core");
 const User = require("../libs/user");
+import Create from "../components/Create.vue";
 import Login from "../components/Login.vue";
 
 export default {
-  components: { Login },
+  components: { Create, Login },
   name: "App",
   data() {
     return {
