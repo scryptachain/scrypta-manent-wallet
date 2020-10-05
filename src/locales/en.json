@@ -1,0 +1,18 @@
+{
+    "create": {
+        "hello": "Scrypta Manent Wallet",
+        "instructions": "Ready to create a new wallet?",
+        "password": {
+            "insert": "Select a new password",
+            "repeat": "Repeat same password",
+            "wrong": "Passwords doesn't match."
+        },
+        "recover": "Recover from mnemonic",
+        "insertmnemonic": "Insert your 24 words here",
+        "recovernow": "Recover now",
+        "label": "Create a label for the wallet",
+        "savemnemonic": "Now it's time to save your 24 words, please write it into a paper and save it in a safe place.",
+        "create": "Create now",
+        "done": "Done"
+    }
+}
