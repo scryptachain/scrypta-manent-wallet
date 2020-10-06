@@ -1,12 +1,12 @@
 <template>
   <div>
-    Dashboard
+    Receive
   </div>
 </template>
 
 <script>
 
 export default {
-  name: 'Dashboard',
+  name: 'Receive',
 }
 </script>

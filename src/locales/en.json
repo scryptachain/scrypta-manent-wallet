@@ -24,6 +24,17 @@
         "sidfile": "Stored .sid file",
         "privkey": "Private key",
         "cardwallet": "Card Wallet",
-        "backtoselection": "Go back"
+        "backtoselection": "Go back",
+        "remotesigninstructions": "Open your Manent App and scan the QR code with the Remote Sign section.",
+        "fillallfields": "Fill all the fields"
+    },
+    "menu": {
+        "dashboard": "Dashboard",
+        "send": "Send",
+        "receive": "Receive",
+        "portfolio": "Portfolio",
+        "contacts": "Contacts",
+        "identities": "Identities",
+        "settings": "Settings"
     }
 }

@@ -2,140 +2,165 @@
   <div class="login">
     <img src="../assets/logo.png" width="150px" /><br /><br />
     <div class="container">
-      <div class="card">
-        <div class="card-content">
-          <div class="content">
-            <div v-if="!loginselected">
-              <h1>{{ $t("create.loginwith") }}</h1>
-              <p>{{ $t("create.logininstructions") }}</p>
-              <br />
-              <b-button
-                type="is-primary"
-                v-on:click="selectMethod('manentapp')"
-                expanded
-                style="margin-bottom: 10px"
-                >{{ $t("create.manentapp") }}</b-button
-              >
-              <b-button
-                type="is-primary"
-                v-on:click="selectMethod('cardwallet')"
-                expanded
-                style="margin-bottom: 10px"
-                >{{ $t("create.cardwallet") }}</b-button
-              >
-              <b-button
-                type="is-primary"
-                v-on:click="selectMethod('privkey')"
-                expanded
-                style="margin-bottom: 10px"
-                >{{ $t("create.privkey") }}</b-button
-              >
-              <b-button
-                type="is-primary"
-                v-on:click="selectMethod('sidfile')"
-                expanded
-                >{{ $t("create.sidfile") }}</b-button
-              >
-              <div
-                style="
-                  position: relative;
-                  width: 100%;
-                  height: 8px;
-                  margin: 12px 0;
-                "
-              >
-                <hr style="margin: 0" />
-                <div
-                  style="position:absolute;top:5px:height:10px;width:40px;left:50%;top:-5px;margin-left:-20px;text-align:center;font-size:10px;background:#fff"
-                >
-                  or
-                </div>
-              </div>
-              <a href="#" v-on:click="hideLogins">{{
-                $t("create.createnew")
-              }}</a>
-            </div>
-            <div v-if="loginselected">
-              <div v-if="loginselected === 'manentapp'">
-                <vue-qrcode value="login:Lasdoijoijoijoijoijoij" />
-              </div>
-              <div v-if="loginselected === 'sidfile'">
-                <b-field :label="$t('create.label')">
-                  <b-input v-model="label"></b-input>
-                </b-field>
-                <b-upload v-model="dropFile" drag-drop>
-                  <section class="section">
-                    <div class="content has-text-centered">
-                      <p>
-                        <b-icon icon="upload" size="is-large"> </b-icon>
-                      </p>
-                      <p>Drop your .sid file here or click to upload</p>
+      <div class="columns">
+        <div class="column"></div>
+        <div class="column is-three-quarters">
+          <div class="card">
+            <div class="card-content">
+              <div class="content">
+                <div v-if="!loginselected">
+                  <h1>{{ $t("create.loginwith") }}</h1>
+                  <p>{{ $t("create.logininstructions") }}</p>
+                  <br />
+                  <b-button
+                    type="is-primary"
+                    v-on:click="selectMethod('manentapp')"
+                    expanded
+                    style="margin-bottom: 10px"
+                    >{{ $t("create.manentapp") }}</b-button
+                  >
+                  <b-button
+                    type="is-primary"
+                    v-on:click="selectMethod('cardwallet')"
+                    expanded
+                    style="margin-bottom: 10px"
+                    >{{ $t("create.cardwallet") }}</b-button
+                  >
+                  <b-button
+                    type="is-primary"
+                    v-on:click="selectMethod('privkey')"
+                    expanded
+                    style="margin-bottom: 10px"
+                    >{{ $t("create.privkey") }}</b-button
+                  >
+                  <b-button
+                    type="is-primary"
+                    v-on:click="selectMethod('sidfile')"
+                    expanded
+                    >{{ $t("create.sidfile") }}</b-button
+                  >
+                  <div
+                    style="
+                      position: relative;
+                      width: 100%;
+                      height: 8px;
+                      margin: 12px 0;
+                    "
+                  >
+                    <hr style="margin: 0" />
+                    <div
+                      style="position:absolute;top:5px:height:10px;width:40px;left:50%;top:-5px;margin-left:-20px;text-align:center;font-size:10px;background:#fff"
+                    >
+                      or
                     </div>
-                  </section>
-                </b-upload>
-                <br /><br />
-                <b-button
-                  type="is-primary"
-                  v-if="!recover"
-                  v-on:click="importSid('sidfile')"
-                  expanded
-                  >{{ $t("create.import") }}</b-button
-                >
-              </div>
-              <div v-if="loginselected === 'cardwallet'">
-                <qrcode-stream @decode="onDecodedCard"></qrcode-stream>
-              </div>
-              <div v-if="loginselected === 'privkey'">
-                <b-field :label="$t('create.label')">
-                  <b-input v-model="label"></b-input>
-                </b-field>
-                <b-field :label="$t('create.privkey')">
-                  <b-input v-model="privkey"></b-input>
-                </b-field>
-                <b-field :label="$t('create.password.insert')">
-                  <b-input
-                    type="password"
-                    v-model="password"
-                    password-reveal
-                  ></b-input>
-                </b-field>
-                <b-field :label="$t('create.password.repeat')">
-                  <b-input
-                    type="password"
-                    v-model="passwordrepeat"
-                    password-reveal
-                  ></b-input>
-                </b-field>
-                <password-meter :password="password" />
-                <b-button
-                  type="is-primary"
-                  v-if="!recover"
-                  v-on:click="importSid('privkey')"
-                  expanded
-                  >{{ $t("create.import") }}</b-button
-                >
-              </div>
-              <div
-                style="
-                  position: relative;
-                  width: 100%;
-                  height: 8px;
-                  margin: 12px 0;
-                "
-              >
-                <hr style="margin: 0" />
-                <div
-                  style="position:absolute;top:5px:height:10px;width:40px;left:50%;top:-5px;margin-left:-20px;text-align:center;font-size:10px;background:#fff"
-                >
-                  or
+                  </div>
+                  <a href="#" v-on:click="hideLogins">{{
+                    $t("create.createnew")
+                  }}</a>
+                </div>
+                <div v-if="loginselected">
+                  <div v-if="loginselected === 'manentapp'">
+                    <img
+                      :src="remoterequest.qrcode"
+                      width="100%"
+                      style="max-width: 400px"
+                    />
+                    <br /><br />
+                    {{ $t("create.remotesigninstructions") }}
+                  </div>
+                  <div v-if="loginselected === 'sidfile'">
+                    <b-field :label="$t('create.label')">
+                      <b-input v-model="label"></b-input>
+                    </b-field>
+                    <b-upload v-model="dropFile" drag-drop>
+                      <section class="section">
+                        <div class="content has-text-centered">
+                          <p>
+                            <b-icon icon="upload" size="is-large"> </b-icon>
+                          </p>
+                          <p>Drop your .sid file here or click to upload</p>
+                        </div>
+                      </section>
+                    </b-upload>
+                    <div v-if="filename">
+                      <br /><br /><b-tag type="is-primary" size="is-medium">{{
+                        filename
+                      }}</b-tag>
+                    </div>
+                    <br /><br />
+                    <b-button
+                      type="is-primary"
+                      v-if="!recover"
+                      v-on:click="importSid('sidfile')"
+                      expanded
+                      >{{ $t("create.import") }}</b-button
+                    >
+                  </div>
+                  <div v-if="loginselected === 'cardwallet'">
+                    <div id="loadingMessage">
+                      🎥 Unable to access video stream<br />(please make sure
+                      you have a webcam enabled)
+                    </div>
+                    <canvas id="canvas" style="width: 100%" hidden></canvas>
+                  </div>
+                  <div v-if="loginselected === 'privkey'">
+                    <b-field :label="$t('create.label')">
+                      <b-input v-model="label"></b-input>
+                    </b-field>
+                    <b-field :label="$t('create.privkey')">
+                      <b-input
+                        type="password"
+                        v-model="privkey"
+                        password-reveal
+                      ></b-input>
+                    </b-field>
+                    <b-field :label="$t('create.password.insert')">
+                      <b-input
+                        type="password"
+                        v-model="password"
+                        password-reveal
+                      ></b-input>
+                    </b-field>
+                    <b-field :label="$t('create.password.repeat')">
+                      <b-input
+                        type="password"
+                        v-model="passwordrepeat"
+                        password-reveal
+                      ></b-input>
+                    </b-field>
+                    <password-meter :password="password" />
+                    <b-button
+                      type="is-primary"
+                      v-if="!recover"
+                      v-on:click="importSid('privkey')"
+                      expanded
+                      >{{ $t("create.import") }}</b-button
+                    >
+                  </div>
+                  <div
+                    style="
+                      position: relative;
+                      width: 100%;
+                      height: 8px;
+                      margin: 12px 0;
+                    "
+                  >
+                    <hr style="margin: 0" />
+                    <div
+                      style="position:absolute;top:5px:height:10px;width:40px;left:50%;top:-5px;margin-left:-20px;text-align:center;font-size:10px;background:#fff"
+                    >
+                      or
+                    </div>
+                  </div>
+                  <a href="#" v-on:click="hideLogin">{{
+                    $t("create.backtoselection")
+                  }}</a>
                 </div>
               </div>
-              <a href="#" v-on:click="hideLogin">{{
-                $t("create.backtoselection")
-              }}</a>
             </div>
           </div>
         </div>
+        <div class="column"></div>
       </div>
     </div>
   </div>
@@ -177,31 +202,52 @@
 </style>
 <script>
 const ScryptaCore = require("@scrypta/core");
-const User = require("../libs/user");
+const User = require("../libs/user")
 import passwordMeter from "vue-simple-password-meter";
-import VueQrcode from "vue-qrcode";
+const ScryptaLogin = require("@scrypta/login");
+import jsQR from "jsqr";
+
+var video;
+var canvasElement;
+var canvas;
+var loadingMessage;
+
+function drawLine(begin, end, color) {
+  canvas.beginPath();
+  canvas.moveTo(begin.x, begin.y);
+  canvas.lineTo(end.x, end.y);
+  canvas.lineWidth = 4;
+  canvas.strokeStyle = color;
+  canvas.stroke();
+}
 
 export default {
-  components: { passwordMeter, VueQrcode },
+  components: { passwordMeter },
   name: "Login",
   data() {
     return {
       standaloneURL: "",
       scrypta: new ScryptaCore(true),
+      scryptalogin: new ScryptaLogin(true),
       user: User,
       error: false,
       recover: false,
       logins: false,
       created: false,
+      video: "",
+      canvas: "",
+      canvasElement: "",
       loginselected: "",
+      remoterequest: "",
       newSeed: "",
-      dropFile: "",
+      dropFile: {},
       wallet: "",
       privkey: "",
       password: "",
       errormessage: "",
       passwordrepeat: "",
       mnemonic: "",
+      filename: "",
       label: "New Identity",
     };
   },
@@ -209,23 +255,134 @@ export default {
     const app = this;
     app.wallet = await app.user.auth();
   },
+  watch: {
+    dropFile(value) {
+      const app = this;
+      app.filename = value.name;
+    },
+  },
   methods: {
-    async importSid(method) {
+    async importSid(method, sid) {
       const app = this;
-      console.log(method);
+      if (method !== "privkey") {
+        if (method === "sidfile") {
+          sid = await app.loadWalletFromFile()
+        }
+      } else {
+        if (
+          app.privkey !== "" &&
+          app.password !== "" &&
+          app.passwordrepeat !== ""
+        ) {
+          if (app.password === app.passwordrepeat) {
+            let wallet = await app.scrypta.importPrivateKey(app.privkey, app.password, false)
+            sid = wallet.walletstore
+          } else {
+            app.$buefy.toast.open({
+              message: app.$t("create.password.wrong"),
+              type: "is-danger",
+            });
+          }
+        } else {
+          app.$buefy.toast.open({
+            message: app.$t("create.fillallfields"),
+            type: "is-danger",
+          });
+        }
+      }
+      await app.scrypta.saveWallet(sid, app.label)
+      app.$emit("logged", sid)
     },
-    onDecodedCard(decodedString) {
+    async selectMethod(what) {
       const app = this;
-      console.log(decodedString);
-    },
-    selectMethod(what) {
-      const app = this;
+      if (what === "manentapp") {
+        app.remoterequest = await app.scryptalogin.listen(function (connected) {
+          app.importSid("remote", connected);
+        });
+      }
       app.loginselected = what;
+      if (what === "cardwallet") {
+        setTimeout(function () {
+          video = document.createElement("video");
+          canvasElement = document.getElementById("canvas");
+          canvas = canvasElement.getContext("2d");
+          loadingMessage = document.getElementById("loadingMessage");
+          navigator.mediaDevices
+            .getUserMedia({ video: { facingMode: "environment" } })
+            .then(function (stream) {
+              video.srcObject = stream;
+              video.setAttribute("playsinline", true);
+              video.play();
+              requestAnimationFrame(app.tick);
+            });
+        }, 200);
+      }
     },
     hideLogins() {
       this.logins = false;
       let url = chrome.runtime.getURL("/index.html");
       window.location.href = url;
+    },
+    loadWalletFromFile() {
+      const app = this
+      return new Promise(response => {
+        const reader = new FileReader();
+        reader.onload = function () {
+          var dataKey = reader.result;
+          response(dataKey);
+        };
+        reader.readAsText(app.dropFile);
+      })
+    },
+    tick() {
+      const app = this;
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        loadingMessage.hidden = true;
+        canvasElement.hidden = false;
+
+        canvasElement.height = video.videoHeight;
+        canvasElement.width = video.videoWidth;
+        canvas.drawImage(
+          video,
+          0,
+          0,
+          canvasElement.width,
+          canvasElement.height
+        );
+        var imageData = canvas.getImageData(
+          0,
+          0,
+          canvasElement.width,
+          canvasElement.height
+        );
+        var code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: "dontInvert",
+        });
+        if (code) {
+          drawLine(
+            code.location.topLeftCorner,
+            code.location.topRightCorner,
+            "#FF3B58"
+          );
+          drawLine(
+            code.location.topRightCorner,
+            code.location.bottomRightCorner,
+            "#FF3B58"
+          );
+          drawLine(
+            code.location.bottomRightCorner,
+            code.location.bottomLeftCorner,
+            "#FF3B58"
+          );
+          drawLine(
+            code.location.bottomLeftCorner,
+            code.location.topLeftCorner,
+            "#FF3B58"
+          );
+          app.importSid("cardwallet", code.data);
+        }
+      }
+      requestAnimationFrame(app.tick);
     },
     hideLogin() {
       this.loginselected = null;
