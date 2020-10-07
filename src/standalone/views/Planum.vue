@@ -1,24 +1,20 @@
 <template>
   <div class="page">
-    <LyraDash v-if="configs.chain !== undefined && configs.chain === 'LYRA'" />
-    <AssetDash v-if="configs.chain !== undefined && configs.chain !== 'LYRA'" />
+    <AssetDash :chain="$route.params.chain" />
   </div>
 </template>
 
 <script>
   let ScryptaCore = require("@scrypta/core")
   import User from '../../libs/user'
-  import LyraDash from '../../components/LyraDash'
   import AssetDash from '../../components/AssetDash'
 
   export default {
     name: 'Dashboard',
-    components: { LyraDash, AssetDash },
+    components: { AssetDash },
     data() {
       return {
         scrypta: new ScryptaCore(true),
-        configs: {},
-        wallet: "",
         isLogging: true,
         isLoading: true
       };

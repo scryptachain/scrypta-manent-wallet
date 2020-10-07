@@ -30,11 +30,42 @@
     },
     "menu": {
         "dashboard": "Dashboard",
-        "send": "Send",
-        "receive": "Receive",
+        "payments": "Payments",
         "portfolio": "Portfolio",
         "contacts": "Contacts",
         "identities": "Identities",
         "settings": "Settings"
+    },
+    "dashboard": {
+        "welcome_back": "Welcome back",
+        "no_txs": "No transactions..",
+        "latest_transactions": "Latest transactions",
+        "pending_transactions": "Pending transactions",
+        "atTime": "at time",
+        "from": "from",
+        "to": "to",
+        "stored": "Blockchain network fee for data storage",
+        "showmore": "Show more transactions"
+    },
+    "portfolio": {
+        "yourassets": "Your assets",
+        "balance": "Balance"
+    },
+    "payments": {
+        "receive": "Receive payment",
+        "makepayment": "Make payment",
+        "to": "To",
+        "asset": "Asset",
+        "amount": "Amount",
+        "memo": "Public memo",
+        "fillallfields": "Fill all the fields",
+        "send": "Send payment",
+        "insertpassword": "Insert wallet password",
+        "wrongpassword": "Wrong password!",
+        "notenoughfunds": "Not enough funds!",
+        "sentfailed": "Sent failed, please retry.",
+        "sentsuccess": "Payment successfully sent!",
+        "sending": "Sending, please wait",
+        "notenoughlyra": "Not enough LYRA to pay network fees!"
     }
 }

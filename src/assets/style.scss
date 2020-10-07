@@ -4,8 +4,17 @@ $primary-invert: findColorInvert($primary);
 $twitter: #4099FF;
 $twitter-invert: findColorInvert($twitter);
 
-.text-left{
-    text-align: left;
+.text-left, .text-left input, .text-left textarea{
+    text-align: left!important;
+}
+
+.pos-btn{
+    width:33%;
+    display:inline-block;
+    height:9.5vh;
+    font-size:20px;
+    line-height:12vh;
+    text-align:center;
 }
 
 .text-center{

@@ -7,8 +7,10 @@ import 'buefy/dist/buefy.css'
 import '../assets/style.scss'
 import VueI18n from 'vue-i18n'
 import Clipboard from 'v-clipboard'
-import Gravatar from '../components/Gravatar.vue';
+import Gravatar from '../components/Gravatar.vue'
+import VueApexCharts from 'vue-apexcharts'
 
+Vue.component('apexchart', VueApexCharts)
 Vue.use(Clipboard)
 Vue.use(VueI18n)
 Vue.use(Buefy)

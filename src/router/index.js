@@ -10,19 +10,19 @@ const routes = [
     component: () => import(/* webpackChunkName: "dashboard" */ '../standalone/views/Dashboard.vue')
   },
   {
-    path: '/send',
-    name: 'Send',
-    component: () => import(/* webpackChunkName: "receive" */ '../standalone/views/Send.vue')
-  },
-  {
-    path: '/receive',
-    name: 'Receive',
-    component: () => import(/* webpackChunkName: "receive" */ '../standalone/views/Receive.vue')
+    path: '/payments',
+    name: 'Payments',
+    component: () => import(/* webpackChunkName: "receive" */ '../standalone/views/Payments.vue')
   },
   {
     path: '/portfolio',
     name: 'Portfolio',
     component: () => import(/* webpackChunkName: "receive" */ '../standalone/views/Portfolio.vue')
+  },
+  {
+    path: '/planum/:chain',
+    name: 'Planum',
+    component: () => import(/* webpackChunkName: "receive" */ '../standalone/views/Planum.vue')
   },
   {
     path: '/contacts',

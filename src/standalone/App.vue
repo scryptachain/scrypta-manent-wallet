@@ -24,7 +24,7 @@
                   left: 0px;
                   border-radius: 3px;
                 "
-                :email="wallet.hash"
+                :email="wallet.master"
               />
               <a href="#" v-on:click="logout">
                 <b-icon
@@ -54,21 +54,11 @@
                         {{ $t('menu.dashboard') }}</router-link>
                       </div>
                       <div class="column">
-                        <router-link to="/send"
+                        <router-link to="/payments"
                           ><b-icon class="menu-icon" icon="send"></b-icon
                         >
                         <br>
-                        {{ $t('menu.send') }}</router-link>
-                      </div>
-                      <div class="column">
-                        <router-link to="/receive"
-                          ><b-icon
-                            class="menu-icon"
-                            icon="call-received"
-                          ></b-icon
-                        >
-                        <br>
-                        {{ $t('menu.receive') }}</router-link>
+                        {{ $t('menu.payments') }}</router-link>
                       </div>
                       <div class="column">
                         <router-link to="/portfolio"
@@ -155,17 +145,18 @@ export default {
       } else {
         localStorage.setItem("xSID", app.wallet);
       }
-      location.reload()
+      window.location = app.standaloneURL
     },
     logout() {
-      this.$buefy.dialog.confirm({
+      const app = this
+      app.$buefy.dialog.confirm({
         message: "Do you really want to exit?",
         onConfirm: () => {
           localStorage.setItem("xSID", "");
           localStorage.setItem("SID", "");
           localStorage.setItem("wallet", "[]");
           localStorage.setItem("xsid", "[]");
-          location.reload();
+          window.location = app.standaloneURL
         },
       });
     },
@@ -181,6 +172,7 @@ html {
   background-image: url("https://images.unsplash.com/photo-1496167117681-944f702be1f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1189&q=80") !important;
   background-size: cover;
   background-position: center;
+  background-attachment: fixed!important;
   background-repeat: no-repeat;
   overflow-y: inherit;
   padding: 40px 10px !important;
