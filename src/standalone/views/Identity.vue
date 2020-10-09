@@ -1,8 +1,7 @@
 <template>
   <div class="text-left">
     <h1 class="title is-2">
-      {{ details.label }}<br />
-      <span style="font-size: 12px">{{ identity }}</span>
+      {{ $t('identities.manage') }} {{ details.label }}
     </h1>
     <b-tabs :animated="false" expanded>
       <b-tab-item :label="$t('identities.management')">
@@ -382,12 +381,19 @@ export default {
         },
         trapFocus: false,
         onConfirm: async (password) => {
-          let key = await app.scrypta.readxKey(password, app.details.wallet);
-          if (key !== false) {
-            let xSIDS = app.details.wallet.split(':')
-            let decrypted = await app.scrypta.decryptData(xSIDS[1], password)
-            app.$buefy.dialog.alert(app.$t('identities.mnemonicis') + '<br><span style="font-size:12px">' + decrypted + '</span>')
-          } else {
+          try{
+            let key = await app.scrypta.readxKey(password, app.details.wallet);
+            if (key !== false) {
+              let xSIDS = app.details.wallet.split(':')
+              let decrypted = await app.scrypta.decryptData(xSIDS[1], password)
+              app.$buefy.dialog.alert(app.$t('identities.mnemonicis') + '<br><span style="font-size:12px">' + decrypted + '</span>')
+            } else {
+              app.$buefy.toast.open({
+                message: app.$t("identities.wrongpassword"),
+                type: "is-danger",
+              });
+            }
+          }catch(e){
             app.$buefy.toast.open({
               message: app.$t("identities.wrongpassword"),
               type: "is-danger",

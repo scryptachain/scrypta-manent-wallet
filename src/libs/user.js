@@ -3,10 +3,13 @@ const scrypta = new ScryptaCore(true)
 const ScryptaDB = require('./db')
 const db = new ScryptaDB(true)
 
-module.exports.auth = async function auth() {
+module.exports.auth = async function auth(id) {
     scrypta.staticnodes = true
     let wallet = await scrypta.returnDefaultxSid()
     let defaultid = await localStorage.getItem('default')
+    if(id !== undefined && id !== null && id.length > 0){
+        defaultid = id
+    }
     if(defaultid === null){
         if(wallet !== false && wallet !== ''){
             try{
@@ -68,24 +71,22 @@ module.exports.auth = async function auth() {
         }
     }else{
         if(defaultid.indexOf('xpub') !== -1){
-            let SIDS = wallet.split(":")
-            let xpub = SIDS[0];
-            let master = await scrypta.deriveKeyfromXPub(xpub, 'm/0')
+            let wallet = await db.get('xsid', 'xpub', defaultid)
+            let master = await scrypta.deriveKeyfromXPub(wallet.xpub, 'm/0')
             return {
                 xsid: wallet.wallet,
-                xpub: xpub,
+                xpub: wallet.xpub,
                 label: wallet.label,
                 master: master.pub
             }
         }else{
-            let SIDS = defaultid.split(":")
-            let address = SIDS[0];
-            wallet = await scrypta.returnIdentity(address)
+            let SIDS = defaultid.split(':')
+            let wallet = await db.get('wallet', 'address', SIDS[0])
             return {
                 sid: wallet.wallet,
-                address: address,
+                address: wallet.address,
                 label: wallet.label,
-                master: address
+                master: wallet.address
             }
         }
     }

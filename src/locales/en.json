@@ -1,4 +1,14 @@
 {
+    "popup": {
+        "useidentity": "USE IDENTITY",
+        "compatible": "Visiting compatible dApp:",
+        "connected": "Connected with dApp:",
+        "disconnect": "Disconnect dApp",
+        "updatedversionfound": "We've found a different version of wallet in dApp, do you want to sync with local one?",
+        "updateidentity": "UPDATE IDENTITY",
+        "updateconfirm": "Are you sure you want to <b>update</b> your account? This action cannot be undone.",
+        "updateid": "Update Identity"
+    },
     "create": {
         "hello": "Create new Scrypta Identity",
         "instructions": "Ready to create a new wallet?",
@@ -74,11 +84,11 @@
     },
     "identities": {
         "youridentities": "Your identities",
-        "manage": "Manage Identity",
         "legacy": "Legacy addresses",
         "advanced": "Advanced addresses",
         "addnew": "Add identity",
         "identityselected": "Identity successfully selected!",
+        "manage": "Manage ID:",
         "management": "Management",
         "did": "Decentralized identity",
         "backup": "Backup",
