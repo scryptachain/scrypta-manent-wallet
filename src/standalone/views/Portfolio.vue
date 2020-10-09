@@ -2,40 +2,70 @@
   <div class="home container">
     <div class="columns">
       <div class="column text-left">
-        <h1 class="title is-2">{{ $t('portfolio.yourassets') }}</h1>
-        <div v-for="sidechain in sidechains" v-bind:key="sidechain.address" style="margin-bottom:15px">
-          <a :href="'/index.html#/planum/' + sidechain.address">
-            <div class="card">
-              <div class="card-content text-left">
-                <div class="media">
-                <div class="media-left">
-                  <figure class="image is-65x65">
-                    <v-gravatar :email="sidechain.address" />
-                  </figure>
-                </div>
-                  <div class="media-content">
-                    <p class="title is-4" style="margin:0">{{ sidechain.name }}</p>
-                    <p class="title is-5">{{ sidechain.address }}</p>
-                    <p class="subtitle is-6" style="margin-bottom:0">issued by <b style="color:#000">{{ sidechain.owner }}</b></p>
-                    <div style="position:absolute; top:8px; right:0 ;height:80px; padding:30px; text-align:right"><b style="color:#000">{{ $t('portfolio.balance') }}</b><br>{{ sidechain.balance }} {{ sidechain.symbol }}</div>
+        <h1 class="title is-2">{{ $t("portfolio.yourassets") }}</h1>
+        <div v-if="sidechains.length > 0">
+          <div
+            v-for="sidechain in sidechains"
+            v-bind:key="sidechain.address"
+            style="margin-bottom: 15px"
+          >
+            <a :href="'/index.html#/planum/' + sidechain.address">
+              <div class="card">
+                <div class="card-content text-left" style="padding: 10px">
+                  <div class="media">
+                    <div class="media-left">
+                      <figure style="margin-top: 5px" class="image is-32x32">
+                        <v-gravatar
+                          style="border-radius: 4px"
+                          :email="sidechain.address"
+                        />
+                      </figure>
+                    </div>
+                    <div class="media-content">
+                      <p class="title is-5" style="margin: 0">
+                        {{ sidechain.name }}
+                      </p>
+                      <p class="title is-6" style="margin-bottom: 3px">
+                        {{ sidechain.address }}
+                      </p>
+                      <div
+                        style="
+                          position: absolute;
+                          top: 10px;
+                          right: 10px;
+                          padding: 0px;
+                          text-align: right;
+                        "
+                      >
+                        <b style="color: #000">{{ $t("portfolio.balance") }}</b
+                        ><br />{{ sidechain.balance }} {{ sidechain.symbol }}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </a>
+            </a>
+          </div>
+        </div>
+        <div v-if="sidechains.length === 0">
+          {{ $t("portfolio.nothingtoshow") }}
         </div>
       </div>
     </div>
-    <b-loading :is-full-page="true" :active.sync="isLoading" :can-cancel="false"></b-loading>
+    <b-loading
+      :is-full-page="true"
+      :active.sync="isLoading"
+      :can-cancel="false"
+    ></b-loading>
   </div>
 </template>
 
 <script>
 let ScryptaCore = require("@scrypta/core");
-import User from '../../libs/user'
+import User from "../../libs/user";
 
 export default {
-  name: 'Explorer',
+  name: "Portfolio",
   data() {
     return {
       scrypta: new ScryptaCore(true),
@@ -44,46 +74,59 @@ export default {
       sidechains: [],
       isLogging: true,
       isLoading: true,
-      searcher: ""
+      searcher: "",
     };
   },
   computed: {
     filteredList() {
-      return this.sidechains.filter(sidechains => {
-        return sidechains.name.toLowerCase().includes(this.searcher.toLowerCase()) ||
+      return this.sidechains.filter((sidechains) => {
+        return (
+          sidechains.name.toLowerCase().includes(this.searcher.toLowerCase()) ||
           sidechains.address.toLowerCase().includes(this.searcher.toLowerCase())
-      })
-    }
+        );
+      });
+    },
   },
   async mounted() {
     const app = this;
-    app.scrypta.staticnodes = true
-    app.wallet = await User.auth()
+    app.scrypta.staticnodes = true;
+    app.wallet = await User.auth();
     app.isLogging = false;
-    app.fetchSidechains()
+    app.fetchSidechains();
   },
   methods: {
-    fetchSidechains(){
-      const app = this
-      app.scrypta.post('/sidechain/scan/address', { dapp_address: app.wallet.master }).then(async response => {
-        let sidechains = []
-        for(let x in response.data){
-          let sidechain = response.data[x]
-          let details = await app.scrypta.post('/sidechain/get', {sidechain_address: sidechain.sidechain })
-          let parsed = {
-            name: details.sidechain[0].data.genesis.name + ' (' + details.sidechain[0].data.genesis.symbol + ')',
-            address: details.sidechain[0].address,
-            symbol: details.sidechain[0].data.genesis.symbol,
-            supply: details.sidechain[0].data.genesis.supply + ' ' + details.sidechain[0].data.genesis.symbol,
-            owner: details.sidechain[0].data.genesis.owner,
-            balance: sidechain.balance
+    fetchSidechains() {
+      const app = this;
+      app.scrypta
+        .post("/sidechain/scan/address", { dapp_address: app.wallet.master })
+        .then(async (response) => {
+          let sidechains = [];
+          for (let x in response.data) {
+            let sidechain = response.data[x];
+            let details = await app.scrypta.post("/sidechain/get", {
+              sidechain_address: sidechain.sidechain,
+            });
+            let parsed = {
+              name:
+                details.sidechain[0].data.genesis.name +
+                " (" +
+                details.sidechain[0].data.genesis.symbol +
+                ")",
+              address: details.sidechain[0].address,
+              symbol: details.sidechain[0].data.genesis.symbol,
+              supply:
+                details.sidechain[0].data.genesis.supply +
+                " " +
+                details.sidechain[0].data.genesis.symbol,
+              owner: details.sidechain[0].data.genesis.owner,
+              balance: sidechain.balance,
+            };
+            sidechains.push(parsed);
           }
-          sidechains.push(parsed)
-        }
-        app.sidechains = sidechains
-        app.isLoading = false
-      })
-    }
-  }
-}
+          app.sidechains = sidechains;
+          app.isLoading = false;
+        });
+    },
+  },
+};
 </script>

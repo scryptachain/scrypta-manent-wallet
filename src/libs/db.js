@@ -9,7 +9,7 @@ module.exports = class ScryptaDB {
     loadBrowserDB(){
         const db = this
         return new Promise(response => {
-            const collections = ["settings"]
+            const collections = ["settings", "wallet", "xsid"]
             for(let x in collections){
                 if (localStorage.getItem(collections[x]) !== null) {
                     db.data[collections[x]] = JSON.parse(localStorage.getItem(collections[x]))
@@ -93,6 +93,25 @@ module.exports = class ScryptaDB {
             }else{
                 response(false)
             }
+        })
+    }
+
+    delete(collection, selector, id){
+        const db = this
+        return new Promise(async response => {
+            await db.loadBrowserDB()
+            let toStore = []
+            for(let x in db.data[collection]){
+                if(db.data[collection][x][selector] !== id){
+                    toStore.push(db.data[collection][x])
+                }
+            }
+            if(db.isBrowser){
+                localStorage.setItem(collection, JSON.stringify(toStore))
+            }else{
+                db.fs.writeFileSync(db.dir + '/' + collection + '.json', JSON.stringify(toStore))
+            }
+            response(true)
         })
     }
 

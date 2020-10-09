@@ -26,7 +26,10 @@
         "cardwallet": "Card Wallet",
         "backtoselection": "Go back",
         "remotesigninstructions": "Open your Manent App and scan the QR code with the Remote Sign section.",
-        "fillallfields": "Fill all the fields"
+        "fillallfields": "Fill all the fields",
+        "legacy": "Legacy",
+        "advanced": "Advanced",
+        "importseed": "Import 24 words seed"
     },
     "menu": {
         "dashboard": "Dashboard",
@@ -49,7 +52,8 @@
     },
     "portfolio": {
         "yourassets": "Your assets",
-        "balance": "Balance"
+        "balance": "Balance",
+        "nothingtoshow": "Nothing to show"
     },
     "payments": {
         "receive": "Receive payment",
@@ -67,5 +71,19 @@
         "sentsuccess": "Payment successfully sent!",
         "sending": "Sending, please wait",
         "notenoughlyra": "Not enough LYRA to pay network fees!"
+    },
+    "identities": {
+        "youridentities": "Your identities",
+        "manage": "Manage Identity",
+        "legacy": "Legacy addresses",
+        "advanced": "Advanced addresses",
+        "addnew": "Add identity",
+        "identityselected": "Identity successfully selected!",
+        "management": "Management",
+        "did": "Decentralized identity",
+        "backup": "Backup",
+        "continuedelete": "Do you really want to delete this identity?",
+        "deleted": "Identity successfully deleted",
+        "cantdelete": "Can't delete this identity"
     }
 }

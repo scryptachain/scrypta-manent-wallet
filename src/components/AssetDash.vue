@@ -1,157 +1,171 @@
 <template>
-  <div class="page" v-if="!isLoading">
-    <b-loading :is-full-page="true" :active.sync="isLoading"></b-loading>
-    <div style="position: relative">
-      <h1
-        class="is-title is-2"
-        style="
-          position: absolute;
-          top: 0;
-          right: 0;
-          font-size: 14px;
-          text-align: right;
-        "
-      >
-        {{ balance }}<br />{{ ticker }}
-      </h1>
-      <h1 class="is-title is-2" style="margin-top: 8px; text-align: left">
-        {{ name }}
-        <div style="font-size: 14px; margin-top: -15px">
-          <br />{{ chain.substr(0, 6) }}...{{ chain.substr(-6) }}
-          <button v-clipboard="chain">copy</button>
-        </div>
-      </h1>
-    </div>
-    <apexchart
-      v-if="!isLoading && confirmed.length > 0"
-      height="300px"
-      width="100%"
-      type="line"
-      :options="options"
-      :series="series"
-    ></apexchart>
-    <div
-      v-if="confirmed.length === 0"
-      style="padding: 50px 0; text-align: center"
-    >
-      {{ $t("dashboard.no_txs") }}
-    </div>
-    <div
-      v-if="unconfirmed.length > 0"
-      style="padding: 0 20px; text-align: left"
-    >
-      <b>{{ $t("dashboard.pending_transactions") }}</b>
-      <br />
-      <br />
-      <div
-        class="card"
-        v-for="tx in unconfirmed"
-        v-bind:key="tx.txid"
-        style="margin-bottom: 5px"
-      >
-        <div class="card-content">
-          <div class="media">
-            <div class="media-left">
-              <figure class="image is-48x48">
-                <v-gravatar :email="tx.from" />
-              </figure>
-            </div>
-            <div class="media-content">
-              <p class="title is-4">
-                <span v-if="tx.amount > 0">
-                  <img src="/img/received.png" style="height: 15px" />
-                </span>
-                <span v-if="tx.amount < 0">
-                  <img src="/img/sent.png" style="height: 15px" />
-                </span>
-                {{ formatPrice(tx.amount).replace("-", "") }} {{ ticker }}
-              </p>
-              <p class="subtitle is-6">
-                <span v-if="tx.amount > 0">{{ $t("from") }}</span>
-                <span v-if="tx.amount <= 0">{{ $t("dashboard.to") }}</span>
-                <b>{{ tx.from.substr(0, 3) }}...{{ tx.from.substr(-3) }}</b>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <br />
-    </div>
-    <div v-if="confirmed.length > 0" style="padding: 0 20px; text-align: left">
-      <b>{{ $t("dashboard.latest_transactions") }}</b>
-      <br />
-      <br />
-      <div
-        class="card"
-        v-for="tx in confirmed.slice(0, chunkSize)"
-        v-bind:key="tx.txid"
-        style="margin-bottom: 5px"
-      >
-        <div class="card-content">
-          <div class="media">
-            <div class="media-left">
-              <figure class="image is-48x48">
-                <span v-if="tx.amount > 0 || tx.to.length === 0">
-                  <v-gravatar :email="tx.from" />
-                </span>
-                <span v-if="tx.amount < 0 && tx.to.length > 0">
-                  <v-gravatar :email="tx.to" />
-                </span>
-              </figure>
-            </div>
-            <div class="media-content" style="overflow: hidden">
-              <p class="title is-4" style="font-size: 20px">
-                <span v-if="tx.amount > 0">
-                  <img src="/img/received.png" style="height: 15px" />
-                </span>
-                <span v-if="tx.amount < 0">
-                  <img src="/img/sent.png" style="height: 15px" />
-                </span>
-                {{ formatPrice(tx.amount).replace("-", "") }} {{ ticker }}
-              </p>
-              <p class="subtitle is-6" style="font-size: 12px">
-                {{ $t("dashboard.atTime") }}
-                <b>{{ tx.date }}</b>
-                <br />
-                <span v-if="tx.amount > 0">
-                  {{ $t("dashboard.from") }}
-                  <b>{{ tx.from.substr(0, 3) }}...{{ tx.from.substr(-3) }}</b>
-                </span>
-                <span v-if="tx.amount < 0 && tx.to.length > 0">
-                  {{ $t("dashboard.to") }}
-                  <b>{{ tx.to.substr(0, 3) }}...{{ tx.to.substr(-3) }}</b>
-                </span>
-                <span v-if="tx.amount < 0 && tx.to.length === 0">
-                  {{ $t("dashboard.stored") }}
-                </span>
-              </p>
-            </div>
-            <a
-              :href="'https://chains.planum.dev/#/transaction/' + chain + '/' + tx.sxid"
-              target="_blank"
-            >
-              <b-icon
-                icon="share"
-                style="
-                  position: absolute;
-                  cursor: pointer;
-                  top: 40px;
-                  z-index: 25;
-                  right: 40px;
-                "
-              ></b-icon
-            ></a>
-          </div>
-        </div>
-      </div>
-      <br />
-      <div class="text-center">
-        <b-button
-          v-if="confirmed.length > chunkSize"
-          @click="showMore"
-          type="is-primary"
-          >{{ $t("dashboard.showmore") }}</b-button
+  <div>
+    <b-loading
+      :is-full-page="true"
+      :active.sync="isLoading"
+      :can-cancel="false"
+    ></b-loading>
+    <div class="page" v-if="!isLoading">
+      <div style="position: relative">
+        <h1
+          class="is-title is-2"
+          style="
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 14px;
+            text-align: right;
+          "
         >
+          {{ balance }}<br />{{ ticker }}
+        </h1>
+        <h1 class="is-title is-2" style="margin-top: 8px; text-align: left">
+          {{ name }}
+          <div style="font-size: 14px; margin-top: -15px">
+            <br />{{ chain.substr(0, 6) }}...{{ chain.substr(-6) }}
+            <button v-clipboard="chain">copy</button>
+          </div>
+        </h1>
+      </div>
+      <apexchart
+        v-if="!isLoading && confirmed.length > 0"
+        height="300px"
+        width="100%"
+        type="line"
+        :options="options"
+        :series="series"
+      ></apexchart>
+      <div
+        v-if="confirmed.length === 0"
+        style="padding: 50px 0; text-align: center"
+      >
+        {{ $t("dashboard.no_txs") }}
+      </div>
+      <div
+        v-if="unconfirmed.length > 0"
+        style="padding: 0 20px; text-align: left"
+      >
+        <b>{{ $t("dashboard.pending_transactions") }}</b>
+        <br />
+        <br />
+        <div
+          class="card"
+          v-for="tx in unconfirmed"
+          v-bind:key="tx.txid"
+          style="margin-bottom: 5px"
+        >
+          <div class="card-content">
+            <div class="media">
+              <div class="media-left">
+                <figure class="image is-48x48">
+                  <v-gravatar :email="tx.from" />
+                </figure>
+              </div>
+              <div class="media-content">
+                <p class="title is-4">
+                  <span v-if="tx.amount > 0">
+                    <img src="/img/received.png" style="height: 15px" />
+                  </span>
+                  <span v-if="tx.amount < 0">
+                    <img src="/img/sent.png" style="height: 15px" />
+                  </span>
+                  {{ formatPrice(tx.amount).replace("-", "") }} {{ ticker }}
+                </p>
+                <p class="subtitle is-6">
+                  <span v-if="tx.amount > 0">{{ $t("from") }}</span>
+                  <span v-if="tx.amount <= 0">{{ $t("dashboard.to") }}</span>
+                  <b>{{ tx.from.substr(0, 3) }}...{{ tx.from.substr(-3) }}</b>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br />
+      </div>
+      <div
+        v-if="confirmed.length > 0"
+        style="padding: 0 20px; text-align: left"
+      >
+        <b>{{ $t("dashboard.latest_transactions") }}</b>
+        <br />
+        <br />
+        <div
+          class="card"
+          v-for="tx in confirmed.slice(0, chunkSize)"
+          v-bind:key="tx.txid"
+          style="margin-bottom: 5px"
+        >
+          <div class="card-content">
+            <div class="media">
+              <div class="media-left">
+                <figure class="image is-48x48">
+                  <span v-if="tx.amount > 0 || tx.to.length === 0">
+                    <v-gravatar :email="tx.from" />
+                  </span>
+                  <span v-if="tx.amount < 0 && tx.to.length > 0">
+                    <v-gravatar :email="tx.to" />
+                  </span>
+                </figure>
+              </div>
+              <div class="media-content" style="overflow: hidden">
+                <p class="title is-4" style="font-size: 20px">
+                  <span v-if="tx.amount > 0">
+                    <img src="/img/received.png" style="height: 15px" />
+                  </span>
+                  <span v-if="tx.amount < 0">
+                    <img src="/img/sent.png" style="height: 15px" />
+                  </span>
+                  {{ formatPrice(tx.amount).replace("-", "") }} {{ ticker }}
+                </p>
+                <p class="subtitle is-6" style="font-size: 12px">
+                  {{ $t("dashboard.atTime") }}
+                  <b>{{ tx.date }}</b>
+                  <br />
+                  <span v-if="tx.amount > 0">
+                    {{ $t("dashboard.from") }}
+                    <b>{{ tx.from.substr(0, 3) }}...{{ tx.from.substr(-3) }}</b>
+                  </span>
+                  <span v-if="tx.amount < 0 && tx.to.length > 0">
+                    {{ $t("dashboard.to") }}
+                    <b>{{ tx.to.substr(0, 3) }}...{{ tx.to.substr(-3) }}</b>
+                  </span>
+                  <span v-if="tx.amount < 0 && tx.to.length === 0">
+                    {{ $t("dashboard.stored") }}
+                  </span>
+                </p>
+              </div>
+              <a
+                :href="
+                  'https://chains.planum.dev/#/transaction/' +
+                  chain +
+                  '/' +
+                  tx.sxid
+                "
+                target="_blank"
+              >
+                <b-icon
+                  icon="share"
+                  style="
+                    position: absolute;
+                    cursor: pointer;
+                    top: 40px;
+                    z-index: 25;
+                    right: 40px;
+                  "
+                ></b-icon
+              ></a>
+            </div>
+          </div>
+        </div>
+        <br />
+        <div class="text-center">
+          <b-button
+            v-if="confirmed.length > chunkSize"
+            @click="showMore"
+            type="is-primary"
+            >{{ $t("dashboard.showmore") }}</b-button
+          >
+        </div>
       </div>
     </div>
   </div>

@@ -8,6 +8,10 @@ $twitter-invert: findColorInvert($twitter);
     text-align: left!important;
 }
 
+button:hover{
+    cursor:pointer!important;
+}
+
 .pos-btn{
     width:33%;
     display:inline-block;

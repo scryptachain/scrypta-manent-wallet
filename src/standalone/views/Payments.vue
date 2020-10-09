@@ -2,56 +2,73 @@
   <div class="home container">
     <div class="columns">
       <div class="column text-left">
-        <h1 class="title is-2">{{ $t("payments.makepayment") }}</h1>
-        <b-field :label="$t('payments.asset')">
-          <b-select
-            v-model="selectedasset"
-            placeholder="Select a character"
-            expanded
-          >
-            <option value="LYRA">Scrypta (LYRA)</option>
-            <option
-              v-for="sidechain in sidechains"
-              v-bind:key="sidechain.address"
-              :value="sidechain.address"
+        <b-tabs :animated="false" expanded>
+          <b-tab-item :label="$t('payments.send')">
+            <br />
+            <h1 class="title is-2">{{ $t("payments.makepayment") }}</h1>
+            <b-field :label="$t('payments.asset')">
+              <b-select
+                v-model="selectedasset"
+                placeholder="Select a character"
+                expanded
+              >
+                <option value="LYRA">Scrypta (LYRA)</option>
+                <option
+                  v-for="sidechain in sidechains"
+                  v-bind:key="sidechain.address"
+                  :value="sidechain.address"
+                >
+                  {{ sidechain.name }} ({{ sidechain.address }})
+                </option>
+              </b-select>
+            </b-field>
+            <b-field :label="$t('payments.to')">
+              <b-input class="text-left" v-model="payment.to"></b-input>
+            </b-field>
+            <div style="position: relative">
+              <div
+                style="
+                  position: absolute;
+                  top: 30px;
+                  z-index: 25;
+                  right: 0;
+                  cursor: pointer;
+                "
+                v-on:click="setMax"
+              >
+                <b-tag rounded>{{ assetbalance }}</b-tag>
+              </div>
+              <b-field :label="$t('payments.amount')">
+                <b-input class="text-left" v-model="payment.amount"></b-input>
+              </b-field>
+            </div>
+            <br />
+            <b-field :label="$t('payments.memo')">
+              <b-input
+                class="text-left"
+                maxlength="5000"
+                type="textarea"
+              ></b-input>
+            </b-field>
+            <b-button
+              type="is-primary"
+              v-if="!isSending"
+              v-on:click="sendPayment()"
+              expanded
+              >{{ $t("payments.send") }}</b-button
             >
-              {{ sidechain.name }} ({{ sidechain.address }})
-            </option>
-          </b-select>
-        </b-field>
-        <b-field :label="$t('payments.to')">
-          <b-input class="text-left" v-model="payment.to"></b-input>
-        </b-field>
-        <div style="position: relative">
-          <div
-            style="
-              position: absolute;
-              top: 30px;
-              z-index: 25;
-              right: 0;
-              cursor: pointer;
-            "
-            v-on:click="setMax"
-          >
-            <b-tag rounded>{{ assetbalance }}</b-tag>
-          </div>
-          <b-field :label="$t('payments.amount')">
-            <b-input class="text-left" v-model="payment.amount"></b-input>
-          </b-field>
-        </div><br>
-        <b-field :label="$t('payments.memo')">
-          <b-input class="text-left" maxlength="5000" type="textarea"></b-input>
-        </b-field>
-        <b-button
-          type="is-primary"
-          v-if="!isSending"
-          v-on:click="sendPayment()"
-          expanded
-          >{{ $t("payments.send") }}</b-button
-        >
-        <div v-if="isSending" style="text-align: center; padding: 15px 0">
-          {{ $t("payments.sending") }}
-        </div>
+            <div v-if="isSending" style="text-align: center; padding: 15px 0">
+              {{ $t("payments.sending") }}
+            </div>
+          </b-tab-item>
+          <b-tab-item :label="$t('payments.receive')">
+            <br />
+            <div class="text-center">
+              <vue-qrcode v-if="wallet && wallet.master !== undefined" style="width:50%" :value="wallet.master" /><br>
+              {{ wallet.master }} <button v-clipboard="wallet.master">copy</button>
+            </div>
+          </b-tab-item>
+        </b-tabs>
       </div>
     </div>
     <b-loading
@@ -65,9 +82,11 @@
 <script>
 let ScryptaCore = require("@scrypta/core");
 import User from "../../libs/user";
+import VueQrcode from 'vue-qrcode'
 
 export default {
-  name: "Explorer",
+  components: { VueQrcode },
+  name: "Payments",
   data() {
     return {
       scrypta: new ScryptaCore(true),
@@ -157,7 +176,7 @@ export default {
     },
     sendPayment() {
       const app = this;
-      app.payment.asset = app.selectedasset
+      app.payment.asset = app.selectedasset;
       if (
         app.payment.amount > 0 &&
         app.payment.to !== "" &&

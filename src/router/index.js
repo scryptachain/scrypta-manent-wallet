@@ -30,9 +30,14 @@ const routes = [
     component: () => import(/* webpackChunkName: "contacts" */ '../standalone/views/Contacts.vue')
   },
   {
-    path: '/identites',
+    path: '/identities',
     name: 'Identities',
     component: () => import(/* webpackChunkName: "identities" */ '../standalone/views/Identities.vue')
+  },
+  {
+    path: '/identity/:identity',
+    name: 'Identity',
+    component: () => import(/* webpackChunkName: "receive" */ '../standalone/views/Identity.vue')
   },
   {
     path: '/settings',
