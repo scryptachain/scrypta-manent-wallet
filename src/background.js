@@ -19,8 +19,10 @@ browser.runtime.onMessage.addListener(
                     return Promise.resolve({dapp: window.location.hostname, sid: sid, xsid: xsid })
                 }
                 case "disconnect": {
-                    localStorage.removeItem('SID')
-                    localStorage.removeItem('xSID')
+                    localStorage.setItem('SID', '')
+                    localStorage.setItem('xSID', '')
+                    localStorage.setItem('wallet', '[]')
+                    localStorage.setItem('xsid', '[]')
                     location.reload()
                 }
             }

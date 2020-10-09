@@ -46,7 +46,7 @@
           padding-top: 20px;
         "
       >
-        <div v-if="injected">
+        <div v-if="injected.dapp !== undefined">
           <div style="margin: 15px 0">
             <span v-if="!injected.sid && !injected.xsid">{{
               $t("popup.compatible")
@@ -133,7 +133,8 @@ export default {
             app.showChange = true;
           }
         } else {
-          app.injected = "";
+          app.injected.sid = "";
+          app.injected.xsid = "";
           app.wallet = await app.user.auth();
         }
       } else if (app.injected.xsid !== null) {
@@ -142,11 +143,13 @@ export default {
         if (check.address !== undefined) {
           app.wallet = await app.user.auth(app.injected.xsid);
         } else {
-          app.injected = "";
+          app.injected.sid = "";
+          app.injected.xsid = "";
           app.wallet = await app.user.auth();
         }
       } else {
-        app.injected = "";
+        app.injected.sid = "";
+        app.injected.xsid = "";
         app.wallet = await app.user.auth();
       }
     } else {
