@@ -7,7 +7,7 @@
         style="float: right"
         type="is-primary"
         size="is-small"
-        ><b-icon style="margin-top: 4px" icon="plus"></b-icon
+        ><b-icon style="margin-top: 1px" icon="plus"></b-icon
       ></b-button>
     </h1>
     <div v-if="sid.length > 0">
@@ -43,7 +43,7 @@
                     style="position: absolute; top: 7px; right: 7px"
                     type="is-primary"
                     size="is-small"
-                    ><b-icon style="margin-top: 4px" icon="eye"></b-icon
+                    ><b-icon style="margin-top: 1px" icon="eye"></b-icon
                   ></b-button>
                 </a>
               </div>
@@ -87,7 +87,7 @@
                     style="position: absolute; top: 7px; right: 7px"
                     type="is-primary"
                     size="is-small"
-                    ><b-icon style="margin-top: 4px" icon="eye"></b-icon
+                    ><b-icon style="margin-top: 1px" icon="eye"></b-icon
                   ></b-button>
                 </a>
               </div>

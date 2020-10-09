@@ -7,7 +7,7 @@
         style="float: right"
         type="is-primary"
         size="is-small"
-        ><b-icon style="margin-top: 4px" icon="plus"></b-icon
+        ><b-icon style="margin-top: 1px" icon="plus"></b-icon
       ></b-button>
     </h1>
     <div v-if="written.length > 0">
