@@ -217,14 +217,6 @@ export default {
         }
       }
     },
-    async importSid(method) {
-      const app = this;
-      console.log(method);
-    },
-    onDecodedCard(decodedString) {
-      const app = this;
-      console.log(decodedString);
-    },
     selectMethod(what) {
       const app = this;
       app.loginselected = what;

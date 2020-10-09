@@ -366,3 +366,8 @@ export default {
   },
 };
 </script>
+<style>
+.select.is-fullwidth select{
+  text-align: left!important;
+}
+</style>

@@ -3,16 +3,6 @@ const scrypta = new ScryptaCore(true)
 const ScryptaDB = require('./db')
 const db = new ScryptaDB(true)
 
-chrome.runtime.onMessage.addListener(
-    function (request, sender, sendResponse) {
-        console.log(sender.tab ?
-            "from a content script:" + sender.tab.url :
-            "from the extension");
-        if (request.greeting == "hello")
-            sendResponse({ farewell: "goodbye" });
-    }
-)
-
 module.exports.check = async function check() {
     return new Promise(response => {
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {

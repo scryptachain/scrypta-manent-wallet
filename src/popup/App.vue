@@ -230,7 +230,6 @@ export default {
     } else {
       app.wallet = await app.user.auth();
     }
-    console.log(app.wallet)
   },
   methods: {
     async logWithWallet() {
@@ -292,7 +291,6 @@ export default {
       const app = this;
       localStorage.setItem("default", wallet);
       app.wallet = await app.user.auth();
-      console.log(app.wallet)
       app.useIdentity()
       app.toggleSwitch()
     },

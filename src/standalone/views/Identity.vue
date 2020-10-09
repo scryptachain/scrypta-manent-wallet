@@ -246,7 +246,21 @@ export default {
         if (app.identity.indexOf("xpub") !== -1) {
           let check = await app.scrypta.readxKey(app.password, app.wallet);
           if (check !== false) {
-            console.log(check);
+            let xSIDS = app.wallet.split(':')
+            let mnemonic = await this.decryptData(xSIDS[1], app.password)
+            let updated = await app.scrypta.buildxSid(app.newpassword, 'latin', false, mnemonic)
+            let old = await app.db.get("xsid", "xpub", xSIDS[0]);
+            old.wallet = updated.walletstore;
+            await app.db.update("xsid", "xpub", xSIDS[0], old);
+            app.$buefy.toast.open({
+              message: app.$t("identities.passwordchanged"),
+              type: "is-success",
+            });
+            app.getIdentity();
+            app.toggleChangePassword();
+            app.password = "";
+            app.newpassword = "";
+            app.repeatnewpassword = "";
           } else {
             app.$buefy.toast.open({
               message: app.$t("identities.wrongpassword"),
