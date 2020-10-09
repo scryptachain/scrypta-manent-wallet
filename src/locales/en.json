@@ -129,6 +129,7 @@
         "writesuccess": "Write was successful!",
         "writeerror": "Writing error, please retry.",
         "nothingtoshow": "Nothing to show...",
-        "block": "Notarized at block"
+        "block": "Notarized at block",
+        "file": "File"
     }
 }

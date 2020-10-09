@@ -88,13 +88,39 @@
               >
               </b-input>
             </b-field>
-            <b-field :label="$t('notarize.message')">
-              <b-input
-                v-model="notarize.message"
-                maxlength="7000"
-                type="textarea"
-              ></b-input>
-            </b-field>
+            <b-tabs :animated="false" expanded>
+              <b-tab-item :label="$t('notarize.message')">
+                <br>
+                <b-field :label="$t('notarize.message')">
+                  <b-input
+                    v-model="notarize.message"
+                    maxlength="7000"
+                    type="textarea"
+                  ></b-input>
+                </b-field>
+              </b-tab-item>
+              <b-tab-item :label="$t('notarize.file')">
+                <br>
+                <b-upload v-if="!filename" v-on:input="calculateHash" v-model="dropFile" drag-drop>
+                  <section class="section">
+                    <div class="content has-text-centered">
+                      <p>
+                        <b-icon icon="upload" size="is-large"> </b-icon>
+                      </p>
+                      <p>Drop a file to calculate hash</p>
+                    </div>
+                  </section>
+                </b-upload>
+                <div v-if="filename" class="text-center">
+                  <b>Selected file:</b> {{
+                    filename
+                  }}<br><br>
+                  <b>Details:</b>
+                  <pre style="text-align:left;">{{JSON.parse(notarize.message)}}</pre>
+                  <b-button type="is-primary" v-on:click="deleteFile">REMOVE FILE</b-button>
+                </div>
+              </b-tab-item>
+            </b-tabs>
             <b-button
               type="is-primary"
               v-if="!isSending"
@@ -116,6 +142,7 @@
 let ScryptaCore = require("@scrypta/core");
 import User from "../../libs/user";
 import ScryptaDB from "../../libs/db";
+const crypto = require('crypto')
 
 export default {
   name: "Notarize",
@@ -136,8 +163,10 @@ export default {
       },
       written: [],
       isLogging: true,
+      filename: '',
       isLoading: true,
       isSending: false,
+      dropFile: {}
     };
   },
   async mounted() {
@@ -159,7 +188,6 @@ export default {
         address: app.wallet.master,
       });
       app.written = written.data;
-      console.log(app.written);
     },
     toggleNew() {
       const app = this;
@@ -168,6 +196,30 @@ export default {
       } else {
         app.showNotarize = false;
       }
+    },
+    async calculateHash(){
+      const app = this
+      let file = app.dropFile
+      var reader = new FileReader();
+      reader.onload = function(event) {
+        var readed = event.target.result;
+        let hash = crypto.createHash("sha256").update(new Uint8Array(readed)).digest("hex");
+        app.notarize.message = JSON.stringify({
+          hash: hash,
+          filename: file.name,
+          size: file.size,
+          lastModified: file.lastModified,
+          type: file.type
+        })
+        app.filename = file.name
+      };
+
+      reader.readAsArrayBuffer(file);
+    },
+    deleteFile(){
+      const app = this
+      app.filename = ''
+      app.notarize.message = ''
     },
     notarizeData() {
       const app = this;
