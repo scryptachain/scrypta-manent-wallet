@@ -466,8 +466,12 @@ export default {
     },
     hideLogins() {
       this.logins = false;
-      let url = chrome.runtime.getURL("/index.html");
-      window.location.href = url;
+      if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
+        let url = chrome.runtime.getURL("/index.html");
+        window.location.href = url;
+      }else{
+        window.location.href = '/#/'
+      }
     },
     loadWalletFromFile() {
       const app = this;

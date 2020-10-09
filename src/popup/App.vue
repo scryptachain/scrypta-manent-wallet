@@ -191,7 +191,11 @@ export default {
   },
   async mounted() {
     const app = this;
-    app.standaloneURL = chrome.runtime.getURL("/index.html");
+    if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
+      app.standaloneURL = chrome.runtime.getURL("/index.html");
+    }else{
+      app.standaloneURL = '/#/'
+    }
     app.injected = await app.dapp.check();
     if (
       app.injected !== undefined &&

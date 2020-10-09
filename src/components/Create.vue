@@ -230,11 +230,15 @@ export default {
     },
     showLogins() {
       this.logins = true;
-      let url = chrome.runtime.getURL("/index.html");
-      if (window.location.href.indexOf("popup.html") !== -1) {
-        window.open(url + "#/login", "_blank");
-      } else {
-        window.open(url + "#/login", "_self");
+      if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
+        let url = chrome.runtime.getURL("/index.html");
+        if (window.location.href.indexOf("popup.html") !== -1) {
+          window.open(url + "#/login", "_blank");
+        } else {
+          window.open(url + "#/login", "_self");
+        }
+      }else{
+        window.open('/#/login', "_self")
       }
     },
     hideLogins() {
