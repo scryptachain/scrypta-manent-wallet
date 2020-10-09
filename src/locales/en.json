@@ -82,8 +82,16 @@
         "management": "Management",
         "did": "Decentralized identity",
         "backup": "Backup",
-        "continuedelete": "Do you really want to delete this identity?",
+        "continuedelete": "Do you really want to delete this identity?<br>This operation <b>can't be undone</b>!",
         "deleted": "Identity successfully deleted",
-        "cantdelete": "Can't delete this identity"
+        "cantdelete": "Can't delete this identity",
+        "oldpassword": "Insert old password",
+        "newpassword": "Select a new password",
+        "repeatnewpassword": "Repeat new password",
+        "change": "CHANGE",
+        "changepassword": "Change password",
+        "fillallfields": "Fill all the fields!",
+        "wrongpassword": "Wrong password!",
+        "passwordchanged": "Password successfully changed!"
     }
 }

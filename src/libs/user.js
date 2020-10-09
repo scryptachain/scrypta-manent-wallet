@@ -1,6 +1,7 @@
 let ScryptaCore = require("@scrypta/core")
 const scrypta = new ScryptaCore(true)
 const ScryptaDB = require('./db')
+const db = new ScryptaDB(true)
 
 module.exports.auth = async function auth() {
     scrypta.staticnodes = true
@@ -39,7 +40,30 @@ module.exports.auth = async function auth() {
                     return false
                 }
             }else{
-                return false
+                let sid = await db.get('wallet')
+                let xsid = await db.get('xsid')
+                if(xsid.length > 0){
+                    let SIDS = xsid[0].wallet.split(":")
+                    let xpub = SIDS[0];
+                    let master = await scrypta.deriveKeyfromXPub(xpub, 'm/0')
+                    return {
+                        xsid: xsid[0].wallet,
+                        xpub: xpub,
+                        label: xsid[0].label,
+                        master: master.pub
+                    }
+                }else if(sid.length > 0){
+                    let SIDS = sid[0].wallet.split(":")
+                    let address = SIDS[0];
+                    return {
+                        sid:  sid[0].wallet,
+                        address: address,
+                        label: sid[0].label,
+                        master: address
+                    }
+                }else{
+                    return false
+                }
             }
         }
     }else{
@@ -69,7 +93,6 @@ module.exports.auth = async function auth() {
 
 module.exports.configs = async function configs() {
     return new Promise(async response => {
-        const db = new ScryptaDB(true)
         
         let language = await db.get('settings', 'set', 'language')
         if(!language){
