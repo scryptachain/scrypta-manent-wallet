@@ -1,7 +1,7 @@
 <template>
   <div class="text-left">
     <h1 class="title is-2">
-      {{ $t("identities.manage") }}<br />
+      {{ details.label }}<br />
       <span style="font-size: 12px">{{ identity }}</span>
     </h1>
     <b-tabs :animated="false" expanded>
@@ -10,6 +10,9 @@
         <b-button v-on:click="setAsDefault" type="is-primary" expanded
           >SET AS DEFAULT</b-button
         ><br />
+        <b-button v-on:click="changeLabel" type="is-primary" expanded
+          >CHANGE LABEL</b-button
+        ><br />
         <b-button v-on:click="toggleChangePassword" type="is-primary" expanded
           >CHANGE PASSWORD</b-button
         ><br />
@@ -17,33 +20,44 @@
           >DELETE IDENTITY</b-button
         >
       </b-tab-item>
-      <b-tab-item :label="$t('identities.did')">
+      <!--<b-tab-item :label="$t('identities.did')">
         <br />
         <b-button type="is-primary" expanded>REGISTER DID NAME WITH SC</b-button
         ><br />
         <b-button type="is-primary" expanded>OPEN SCRYPTAID</b-button>
-      </b-tab-item>
+      </b-tab-item>-->
       <b-tab-item :label="$t('identities.backup')">
         <br />
         <b-button
           v-if="identity.indexOf('xpub') !== -1"
           type="is-primary"
           expanded
+          v-on:click="showMnemonic"
           >SHOW MNEMONIC</b-button
         ><br v-if="identity.indexOf('xpub') !== -1" />
         <b-button
           v-if="identity.indexOf('xpub') === -1"
           type="is-primary"
           expanded
+          v-on:click="showPrivateKey"
           >SHOW PRIVATE KEY</b-button
         ><br v-if="identity.indexOf('xpub') === -1" />
         <b-button
           v-if="identity.indexOf('xpub') === -1"
           type="is-primary"
           expanded
+          v-on:click="downloadSid"
           >BACKUP .SID FILE</b-button
-        ><br v-if="identity.indexOf('xpub') === -1" />
-        <b-button type="is-primary" expanded>PRINT PAPER WALLET</b-button>
+        >
+        <b-button
+          v-if="identity.indexOf('xpub') !== -1"
+          type="is-primary"
+          expanded
+          v-on:click="downloadxSid"
+          >BACKUP .xSID FILE</b-button
+        ><br />
+        <a id="downloadsid" style="display: none"></a>
+        <a id="downloadxsid" style="display: none"></a>
       </b-tab-item>
     </b-tabs>
     <b-modal
@@ -57,8 +71,14 @@
       <template>
         <div class="modal-card" style="width: auto">
           <header class="modal-card-head">
-            <p class="modal-card-title">{{ $t('identities.changepassword') }}</p>
-            <button type="button" class="delete" @click="toggleChangePassword" />
+            <p class="modal-card-title">
+              {{ $t("identities.changepassword") }}
+            </p>
+            <button
+              type="button"
+              class="delete"
+              @click="toggleChangePassword"
+            />
           </header>
           <section class="modal-card-body">
             <b-field :label="$t('identities.oldpassword')">
@@ -95,7 +115,13 @@
             </b-field>
           </section>
           <footer class="modal-card-foot">
-            <button v-on:click="changePassword" class="button is-primary" style="width:100%">{{ $t('identities.changepassword') }}</button>
+            <button
+              v-on:click="changePassword"
+              class="button is-primary"
+              style="width: 100%"
+            >
+              {{ $t("identities.changepassword") }}
+            </button>
           </footer>
         </div>
       </template>
@@ -127,7 +153,7 @@ export default {
       searcher: "",
       password: "",
       newpassword: "",
-      repeatnewpassword: ""
+      repeatnewpassword: "",
     };
   },
   async mounted() {
@@ -211,49 +237,165 @@ export default {
         },
       });
     },
-    async changePassword(){
+    async changePassword() {
       const app = this;
-      if(app.password !== '' && app.newpassword !== '' && app.repeatnewpassword !== '' && app.newpassword === app.repeatnewpassword){
-        if(app.identity.indexOf('xpub') !== -1){
-          let check = await app.scrypta.readxKey(app.password, app.wallet)
-          if(check !== false){
-            console.log(check)
-          }else{
+      if (
+        app.password !== "" &&
+        app.newpassword !== "" &&
+        app.repeatnewpassword !== "" &&
+        app.newpassword === app.repeatnewpassword
+      ) {
+        if (app.identity.indexOf("xpub") !== -1) {
+          let check = await app.scrypta.readxKey(app.password, app.wallet);
+          if (check !== false) {
+            console.log(check);
+          } else {
             app.$buefy.toast.open({
               message: app.$t("identities.wrongpassword"),
               type: "is-danger",
             });
           }
-        }else{
-          let check = await app.scrypta.readKey(app.password, app.details.wallet)
-          if(check !== false){
-            let updated = await app.scrypta.importPrivateKey(check.prv, app.newpassword, false)
-            let old = await app.db.get('wallet', 'address', app.identity)
-            old.wallet = updated.walletstore
-            await app.db.update('wallet', 'address', app.identity, old)
+        } else {
+          let check = await app.scrypta.readKey(
+            app.password,
+            app.details.wallet
+          );
+          if (check !== false) {
+            let updated = await app.scrypta.importPrivateKey(
+              check.prv,
+              app.newpassword,
+              false
+            );
+            let old = await app.db.get("wallet", "address", app.identity);
+            old.wallet = updated.walletstore;
+            await app.db.update("wallet", "address", app.identity, old);
             app.$buefy.toast.open({
               message: app.$t("identities.passwordchanged"),
               type: "is-success",
             });
             app.getIdentity();
-            app.toggleChangePassword()
-            app.password = ''
-            app.newpassword = ''
-            app.repeatnewpassword = ''
-          }else{
+            app.toggleChangePassword();
+            app.password = "";
+            app.newpassword = "";
+            app.repeatnewpassword = "";
+          } else {
             app.$buefy.toast.open({
               message: app.$t("identities.wrongpassword"),
               type: "is-danger",
             });
           }
         }
-      }else{
+      } else {
         app.$buefy.toast.open({
           message: app.$t("identities.fillallfields"),
           type: "is-danger",
         });
       }
-    }
+    },
+    downloadSid() {
+      const app = this;
+      var a = document.getElementById("downloadsid");
+      var file = new Blob([app.details.wallet], { type: "scryptaid" });
+      a.href = URL.createObjectURL(file);
+      a.download = app.details.label + ".sid";
+      var clickEvent = new MouseEvent("click", {
+        view: window,
+        bubbles: true,
+        cancelable: false,
+      });
+      a.dispatchEvent(clickEvent);
+    },
+    downloadxSid() {
+      const app = this;
+      var a = document.getElementById("downloadxsid");
+      var file = new Blob([app.details.wallet], { type: "scryptaxid" });
+      a.href = URL.createObjectURL(file);
+      a.download = app.details.label + ".xsid";
+      var clickEvent = new MouseEvent("click", {
+        view: window,
+        bubbles: true,
+        cancelable: false,
+      });
+      a.dispatchEvent(clickEvent);
+    },
+    changeLabel() {
+      const app = this;
+      app.$buefy.dialog.prompt({
+        message: app.$t("identities.selectnewlabel"),
+        inputAttrs: {
+          maxlength: 50,
+        },
+        trapFocus: true,
+        onConfirm: async (value) => {
+          if (value.length > 0) {
+            app.details.label = value;
+            if (app.identity.indexOf("xpub") !== -1) {
+              await app.db.update("xsid", "xpub", app.identity, app.details);
+            } else {
+              await app.db.update(
+                "wallet",
+                "address",
+                app.identity,
+                app.details
+              );
+            }
+            app.$buefy.toast.open({
+              message: app.$t("identities.labelchanged"),
+              type: "is-success",
+            });
+          } else {
+            app.$buefy.toast.open({
+              message: app.$t("identities.noblanklabel"),
+              type: "is-danger",
+            });
+          }
+        },
+      });
+    },
+    showPrivateKey() {
+      const app = this
+      app.$buefy.dialog.prompt({
+        message: app.$t("payments.insertpassword"),
+        inputAttrs: {
+          type: "password",
+        },
+        trapFocus: false,
+        onConfirm: async (password) => {
+          let key = await app.scrypta.readKey(password, app.details.wallet);
+          if (key !== false) {
+            app.$buefy.dialog.alert(app.$t('identities.privkeyis') + '<br><span style="font-size:12px">' + key.prv + '</span>')
+          } else {
+            app.$buefy.toast.open({
+              message: app.$t("identities.wrongpassword"),
+              type: "is-danger",
+            });
+          }
+        },
+      });
+    },
+    showMnemonic() {
+      const app = this
+      app.$buefy.dialog.prompt({
+        message: app.$t("payments.insertpassword"),
+        inputAttrs: {
+          type: "password",
+        },
+        trapFocus: false,
+        onConfirm: async (password) => {
+          let key = await app.scrypta.readxKey(password, app.details.wallet);
+          if (key !== false) {
+            let xSIDS = app.details.wallet.split(':')
+            let decrypted = await app.scrypta.decryptData(xSIDS[1], password)
+            app.$buefy.dialog.alert(app.$t('identities.mnemonicis') + '<br><span style="font-size:12px">' + decrypted + '</span>')
+          } else {
+            app.$buefy.toast.open({
+              message: app.$t("identities.wrongpassword"),
+              type: "is-danger",
+            });
+          }
+        },
+      });
+    },
   },
 };
 </script>

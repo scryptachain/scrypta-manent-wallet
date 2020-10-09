@@ -92,6 +92,11 @@
         "changepassword": "Change password",
         "fillallfields": "Fill all the fields!",
         "wrongpassword": "Wrong password!",
-        "passwordchanged": "Password successfully changed!"
+        "passwordchanged": "Password successfully changed!",
+        "selectnewlabel": "Select new label",
+        "noblanklabel": "Label can't be blank",
+        "labelchanged": "Label successfully changed!",
+        "privkeyis": "Private key is:",
+        "mnemonicis": "Mnemonic is:"
     }
 }

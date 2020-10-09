@@ -474,6 +474,7 @@ export default {
       return new Promise((response) => {
         const reader = new FileReader();
         reader.onload = function () {
+          app.label = app.dropFile.name.replace('.sid', '').replace('.xsid', '')
           var dataKey = reader.result;
           response(dataKey);
         };
