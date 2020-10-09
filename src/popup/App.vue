@@ -3,13 +3,13 @@
     <div v-if="!wallet">
       <Create v-on:logged="logWithWallet" />
     </div>
-    <div v-if="wallet">
+    <div v-if="wallet && !showSwitch">
       <a
         :href="standaloneURL"
         target="_blank"
-        style="position: absolute; top: 10px; right: 10px; z-index: 9"
+        style="position: absolute; top: 18px; right: 10px; z-index: 9"
       >
-        <b-icon icon="export-variant" size="is-small"></b-icon>
+        <b-icon icon="export-variant"></b-icon>
       </a>
       <div
         style="
@@ -45,8 +45,13 @@
           margin-top: 20px;
           padding-top: 20px;
         "
-      >
-        <div v-if="injected.dapp !== undefined">
+      >  
+        <div style="margin-top:5px">
+          <b>{{ $t('popup.balance') }}</b><br>
+          {{ balance }} LYRA
+        </div>
+        <div v-if="injected !== undefined && injected.dapp !== undefined">
+          <hr>
           <div style="margin: 15px 0">
             <span v-if="!injected.sid && !injected.xsid">{{
               $t("popup.compatible")
@@ -80,7 +85,72 @@
             >{{ $t("popup.disconnect") }}</b-button
           >
         </div>
+        <br />
+        <span
+          style="color: #d8213b; cursor: pointer"
+          v-on:click="toggleSwitch"
+          >{{ $t("popup.switch") }}</span
+        >
       </div>
+    </div>
+    <div v-if="wallet && showSwitch" style="text-align: left;">
+      <div class="text-center" style="margin-top:-15px"><b>{{ $t('popup.selectid') }}</b></div><hr>
+      <div
+        v-for="identity in xsid"
+        v-bind:key="identity.wallet"
+        style="cursor: pointer"
+      >
+        <div v-on:click="setAsDefault(identity.wallet)">
+          <v-gravatar
+            :email="identity.xpub"
+            style="
+              float: left;
+              border-radius: 4px;
+              margin-top: -2px;
+              margin-right: 8px;
+              width: 35px;
+              height: 35px;
+            "
+          />
+          <b style="font-size: 12px">{{ identity.label }}</b
+          ><br />
+          <span style="font-size: 9px"
+            >{{ identity.xpub.substr(0, 10) }}...{{
+              identity.xpub.substr(-10)
+            }}</span
+          ><br><br>
+        </div>
+      </div>
+      <div
+        v-for="identity in sid"
+        v-bind:key="identity.wallet"
+        style="cursor: pointer"
+      >
+        <div v-on:click="setAsDefault(identity.wallet)">
+          <v-gravatar
+            :email="identity.address"
+            style="
+              float: left;
+              border-radius: 4px;
+              margin-top: -2px;
+              margin-right: 8px;
+              width: 35px;
+              height: 35px;
+            "
+          />
+          <b style="font-size: 12px">{{ identity.label }}</b
+          ><br />
+          <span style="font-size: 9px"
+            >{{ identity.address.substr(0, 10) }}...{{
+              identity.address.substr(-10)
+            }}</span
+          ><br><br>
+        </div>
+      </div>
+      <hr style="margin-top:-5px" />
+      <div class="text-center" style="color: #d8213b; cursor: pointer" v-on:click="toggleSwitch">{{
+        $t("popup.back")
+      }}</div>
     </div>
   </div>
 </template>
@@ -105,6 +175,9 @@ export default {
       error: false,
       recover: false,
       created: false,
+      showChange: false,
+      showSwitch: false,
+      balance: 0,
       newSeed: "",
       wallet: "",
       password: "",
@@ -112,6 +185,8 @@ export default {
       injected: "",
       mnemonic: "",
       label: "New Identity",
+      sid: [],
+      xsid: [],
     };
   },
   async mounted() {
@@ -155,15 +230,26 @@ export default {
     } else {
       app.wallet = await app.user.auth();
     }
+    console.log(app.wallet)
   },
   methods: {
     async logWithWallet() {
       const app = this;
       app.wallet = await app.user.auth();
     },
+    async toggleSwitch() {
+      const app = this;
+      app.sid = await app.db.get("wallet");
+      app.xsid = await app.db.get("xsid");
+      if (app.showSwitch === true) {
+        app.showSwitch = false;
+      } else {
+        app.showSwitch = true;
+      }
+    },
     async useIdentity() {
       const app = this;
-      if (app.wallet.master.indexOf("xpub") !== -1) {
+      if (app.wallet.xsid !== undefined) {
         app.dapp.inject(app.wallet.xsid);
       } else {
         app.dapp.inject(app.wallet.sid);
@@ -185,17 +271,30 @@ export default {
         hasIcon: true,
         onConfirm: async () => {
           if (app.wallet.master.indexOf("xpub") !== -1) {
-            app.wallet.wallet = app.injected.xsid
-            await app.db.update("xsid", "xpub", app.wallet.master, app.wallet)
-            app.wallet = await app.user.auth(app.injected.xsid)
+            app.wallet.wallet = app.injected.xsid;
+            await app.db.update("xsid", "xpub", app.wallet.master, app.wallet);
+            app.wallet = await app.user.auth(app.injected.xsid);
           } else {
-            app.wallet.wallet = app.injected.sid
-            await app.db.update("wallet", "address", app.wallet.master, app.wallet)
-            app.wallet = await app.user.auth(app.injected.sid)
+            app.wallet.wallet = app.injected.sid;
+            await app.db.update(
+              "wallet",
+              "address",
+              app.wallet.master,
+              app.wallet
+            );
+            app.wallet = await app.user.auth(app.injected.sid);
           }
-          app.showChange = false
+          app.showChange = false;
         },
       });
+    },
+    async setAsDefault(wallet) {
+      const app = this;
+      localStorage.setItem("default", wallet);
+      app.wallet = await app.user.auth();
+      console.log(app.wallet)
+      app.useIdentity()
+      app.toggleSwitch()
     },
   },
 };
@@ -213,6 +312,8 @@ body {
 .popup {
   min-width: 350px;
   width: 100%;
+  margin-bottom:-20px;
+  padding-bottom:0;
   text-align: center;
 }
 .card,

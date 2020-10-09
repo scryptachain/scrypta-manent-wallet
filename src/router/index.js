@@ -43,6 +43,11 @@ const routes = [
     path: '/settings',
     name: 'Settings',
     component: () => import(/* webpackChunkName: "settings" */ '../standalone/views/Settings.vue')
+  },
+  {
+    path: '/notarize',
+    name: 'Notarize',
+    component: () => import(/* webpackChunkName: "settings" */ '../standalone/views/Notarize.vue')
   }
 ]
 

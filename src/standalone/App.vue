@@ -106,6 +106,13 @@
                           {{ $t("menu.identities") }}</router-link
                         >
                       </div>
+                      <div class="column">
+                        <router-link to="/notarize"
+                          ><b-icon class="menu-icon" icon="package-down"></b-icon>
+                          <br />
+                          {{ $t("menu.notarize") }}</router-link
+                        >
+                      </div>
                       <!-- <div class="column">
                         <router-link to="/settings"
                           ><b-icon class="menu-icon" icon="wrench"></b-icon>

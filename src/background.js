@@ -2,6 +2,7 @@ console.log('Scrypta Manent Wallet injected, now able to use it!!')
 browser.runtime.onMessage.addListener(
     function (request, sender) {
         if(request.method !== undefined){
+            console.log('RECEIVED REQUEST', request)
             switch(request.method){
                 case "inject": {
                     if(request.wallet !== undefined && request.wallet.indexOf('xpub') !== -1){

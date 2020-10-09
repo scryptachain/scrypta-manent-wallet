@@ -119,7 +119,6 @@
   </div>
 </template>
 
-
 <script>
 let ScryptaCore = require("@scrypta/core");
 import User from "../../libs/user";
@@ -145,7 +144,6 @@ export default {
   },
   async mounted() {
     const app = this;
-    app.scrypta.staticnodes = true;
     app.wallet = await User.auth();
     app.isLogging = false;
     app.fetchIdentities();

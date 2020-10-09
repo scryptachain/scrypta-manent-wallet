@@ -214,7 +214,6 @@ export default {
   async mounted() {
     const app = this;
     app.wallet = await User.auth();
-    app.scrypta.staticnodes = true;
     if (app.wallet !== false) {
       app.configs = await User.configs();
       app.ticker = "LYRA";

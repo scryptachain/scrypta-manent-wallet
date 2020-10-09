@@ -109,7 +109,6 @@ export default {
   },
   async mounted() {
     const app = this;
-    app.scrypta.staticnodes = true;
     app.wallet = await User.auth();
     app.isLogging = false;
     let balancelyra = await app.scrypta.get("/balance/" + app.wallet.master);
@@ -192,15 +191,19 @@ export default {
             let key;
             if (app.wallet.sid !== undefined) {
               key = await app.scrypta.readKey(password, app.wallet.sid);
-              key.sid = app.wallet.sid;
+              if(key !== false){
+                key.sid = app.wallet.sid;
+              }
             } else if (app.user.xsid !== undefined) {
               let xkey = await app.scrypta.readxKey(password, app.wallet.xsid);
-              key = await app.scrypta.deriveKeyFromSeed(xkey.seed, "m/0");
-              key.sid = await app.scrypta.importPrivateKey(
-                key.prv,
-                password,
-                false
-              );
+              if(xkey !== false){
+                key = await app.scrypta.deriveKeyFromSeed(xkey.seed, "m/0");
+                key.sid = await app.scrypta.importPrivateKey(
+                  key.prv,
+                  password,
+                  false
+                );
+              }
             }
             let SIDS = key.sid.split(":");
             key.address = SIDS[0];

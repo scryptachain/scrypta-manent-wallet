@@ -157,7 +157,6 @@ export default {
   },
   async mounted() {
     const app = this;
-    app.scrypta.staticnodes = true;
     app.wallet = await User.auth();
     app.isLogging = false;
     app.identity = app.$route.params.identity;

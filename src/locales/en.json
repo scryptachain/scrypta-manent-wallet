@@ -7,7 +7,11 @@
         "updatedversionfound": "We've found a different version of wallet in dApp, do you want to sync with local one?",
         "updateidentity": "UPDATE IDENTITY",
         "updateconfirm": "Are you sure you want to <b>update</b> your account? This action cannot be undone.",
-        "updateid": "Update Identity"
+        "updateid": "Update Identity",
+        "switch": "Switch identity",
+        "back": "Go Back",
+        "selectid": "Select an Identity",
+        "balance": "Balance"
     },
     "create": {
         "hello": "Create new Scrypta Identity",
@@ -47,7 +51,8 @@
         "portfolio": "Portfolio",
         "contacts": "Contacts",
         "identities": "Identities",
-        "settings": "Settings"
+        "settings": "Settings",
+        "notarize": "Notarize"
     },
     "dashboard": {
         "welcome_back": "Welcome back",
@@ -108,5 +113,22 @@
         "labelchanged": "Label successfully changed!",
         "privkeyis": "Private key is:",
         "mnemonicis": "Mnemonic is:"
+    },
+    "notarize": {
+        "notarize": "Notarize data",
+        "addnew": "Notarize data",
+        "title": "Title",
+        "message": "Message",
+        "encrypt": "Select encryption method",
+        "password": "Password", 
+        "noencrypt": "Don't encrypt data (public)",
+        "yesencrypt": "Encrypt data with password (private)",
+        "notarizenow": "Notarize",
+        "writemessage": "Write at least a message please!",
+        "iswriting": "Writing, please wait..",
+        "writesuccess": "Write was successful!",
+        "writeerror": "Writing error, please retry.",
+        "nothingtoshow": "Nothing to show...",
+        "block": "Notarized at block"
     }
 }
