@@ -64,7 +64,7 @@
           <b-tab-item :label="$t('payments.receive')">
             <br />
             <div class="text-center">
-              <vue-qrcode v-if="wallet && wallet.master !== undefined" style="width:50%" :value="wallet.master" /><br>
+              <vue-qrcode v-if="wallet && wallet.master !== undefined" class="qr" style="width:50%" :value="wallet.master" /><br>
               {{ wallet.master }} <button v-clipboard="wallet.master">copy</button>
             </div>
           </b-tab-item>

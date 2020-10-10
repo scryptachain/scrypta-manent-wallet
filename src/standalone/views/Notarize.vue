@@ -27,7 +27,7 @@
                     />
                   </figure>
                 </div>
-                <div class="media-content" style="word-break: break-word">
+                <div class="media-content" style="word-break: break-word; padding-right:5px!important">
                   <p v-if="data.refID" class="title is-5" style="margin: 0">
                     {{ data.refID }}
                   </p>

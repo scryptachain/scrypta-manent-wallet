@@ -22,13 +22,14 @@
       </div>
     </div>
     <div v-if="wallet">
-      <img src="../assets/logo.png" width="150px" /><br /><br />
+      <img class="logo" src="../assets/logo.png" width="150px" /><br /><br />
       <div class="container">
         <div class="columns">
           <div class="column"></div>
           <div class="column is-three-quarters">
             <div class="card">
               <v-gravatar
+                class="avatar"
                 style="
                   position: absolute;
                   cursor: pointer;
@@ -44,6 +45,7 @@
               <a href="#" v-on:click="logout">
                 <b-icon
                   icon="logout"
+                  class="logout"
                   size="is-medium"
                   style="
                     position: absolute;
@@ -64,7 +66,7 @@
                       margin-bottom: 15px;
                     "
                   >
-                    <div class="columns">
+                    <div class="columns is-mobile">
                       <div class="column">
                         <router-link to="/"
                           ><b-icon
