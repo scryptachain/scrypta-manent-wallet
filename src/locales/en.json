@@ -126,7 +126,9 @@
         "noblanklabel": "Label can't be blank",
         "labelchanged": "Label successfully changed!",
         "privkeyis": "Private key is:",
-        "mnemonicis": "Mnemonic is:"
+        "mnemonicis": "Mnemonic is:",
+        "syncmanent": "Sync Manent App",
+        "syncmanentinstructions": "Open Manent App and add and identity by clicking the button 'RESTORE PAPER WALLET' in new identity section."
     },
     "notarize": {
         "notarize": "Notarize data",

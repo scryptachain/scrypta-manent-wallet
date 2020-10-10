@@ -1,26 +1,32 @@
 <template>
   <div class="text-left">
     <h1 class="title is-2">
-      {{ $t('identities.manage') }} {{ details.label }}
+      {{ $t("identities.manage") }} {{ details.label }}
     </h1>
     <b-tabs :animated="false" expanded>
       <b-tab-item :label="$t('identities.management')">
         <br />
-        <b-button v-on:click="setAsDefault" type="is-primary" expanded
-          >{{ $t('identities.actions.setdefault') }}</b-button
+        <b-button v-on:click="setAsDefault" type="is-primary" expanded>{{
+          $t("identities.actions.setdefault")
+        }}</b-button
         ><br />
-        <b-button v-on:click="changeLabel" type="is-primary" expanded
-          >{{ $t('identities.actions.changelabel') }}</b-button
+        <b-button v-on:click="changeLabel" type="is-primary" expanded>{{
+          $t("identities.actions.changelabel")
+        }}</b-button
         ><br />
-        <b-button v-on:click="toggleChangePassword" type="is-primary" expanded
-          >{{ $t('identities.actions.changepassword') }}</b-button
+        <b-button
+          v-on:click="toggleChangePassword"
+          type="is-primary"
+          expanded
+          >{{ $t("identities.actions.changepassword") }}</b-button
         ><br />
-        <b-button v-on:click="showExtendedSid" type="is-primary" expanded
-          >{{ $t('identities.actions.syncmanentapp') }}</b-button
-        ><br />
-        <b-button v-on:click="deleteIdentity" type="is-primary" expanded
-          >{{ $t('identities.actions.deleteid') }}</b-button
-        >
+        <b-button v-if="identity.indexOf('xpub') === -1" v-on:click="toggleSyncManent" type="is-primary" expanded>{{
+          $t("identities.actions.syncmanentapp")
+        }}</b-button
+        ><br v-if="identity.indexOf('xpub') === -1" />
+        <b-button v-on:click="deleteIdentity" type="is-primary" expanded>{{
+          $t("identities.actions.deleteid")
+        }}</b-button>
       </b-tab-item>
       <!--<b-tab-item :label="$t('identities.did')">
         <br />
@@ -35,32 +41,32 @@
           type="is-primary"
           expanded
           v-on:click="showMnemonic"
-          >{{ $t('identities.actions.showmnemonic') }}</b-button
+          >{{ $t("identities.actions.showmnemonic") }}</b-button
         ><br v-if="identity.indexOf('xpub') !== -1" />
         <b-button
           v-if="identity.indexOf('xpub') === -1"
           type="is-primary"
           expanded
           v-on:click="showPrivateKey"
-          >{{ $t('identities.actions.showprivkey') }}</b-button
+          >{{ $t("identities.actions.showprivkey") }}</b-button
         ><br v-if="identity.indexOf('xpub') === -1" />
-        <b-button v-on:click="toggleShamirBackup" type="is-primary" expanded
-          >{{ $t('identities.actions.shamirbackup') }}</b-button
-        >
-        <br />
+        <!--<b-button v-on:click="toggleShamirBackup" type="is-primary" expanded>{{
+          $t("identities.actions.shamirbackup")
+        }}</b-button>
+        <br />-->
         <b-button
           v-if="identity.indexOf('xpub') === -1"
           type="is-primary"
           expanded
           v-on:click="downloadSid"
-          >{{ $t('identities.actions.backupsid') }}</b-button
+          >{{ $t("identities.actions.backupsid") }}</b-button
         >
         <b-button
           v-if="identity.indexOf('xpub') !== -1"
           type="is-primary"
           expanded
           v-on:click="downloadxSid"
-          >{{ $t('identities.actions.backupxsid') }}</b-button
+          >{{ $t("identities.actions.backupxsid") }}</b-button
         ><br />
         <a id="downloadsid" style="display: none"></a>
         <a id="downloadxsid" style="display: none"></a>
@@ -132,6 +138,29 @@
         </div>
       </template>
     </b-modal>
+    <b-modal
+      v-model="showSyncManent"
+      has-modal-card
+      trap-focus
+      :destroy-on-hide="true"
+      aria-role="dialog"
+      aria-modal
+    >
+      <template>
+        <div class="modal-card" style="width: auto">
+          <header class="modal-card-head">
+            <p class="modal-card-title">
+              {{ $t("identities.syncmanent") }}
+            </p>
+            <button type="button" class="delete" @click="toggleSyncManent" />
+          </header>
+          <section class="modal-card-body text-center" style="width:350px;">
+            <p>{{ $t("identities.syncmanentinstructions") }}</p>
+            <vue-qrcode style="width: 100%" :value="wallet.sid" /><br />
+          </section>
+        </div>
+      </template>
+    </b-modal>
   </div>
 </template>
 
@@ -140,8 +169,10 @@
 let ScryptaCore = require("@scrypta/core");
 import User from "../../libs/user";
 import ScryptaDB from "../../libs/db";
+import VueQrcode from "vue-qrcode";
 
 export default {
+  components: { VueQrcode },
   name: "Identities",
   data() {
     return {
@@ -151,6 +182,7 @@ export default {
       wallet: "",
       identity: "",
       showChangePassword: false,
+      showSyncManent: false,
       details: {},
       sid: [],
       xsid: [],
@@ -230,12 +262,16 @@ export default {
               await localStorage.setItem("default", app.xsid[0].wallet);
               await localStorage.setItem("SID", app.xsid[0].wallet);
             }
-            if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
+            if (
+              chrome !== undefined &&
+              chrome.runtime !== undefined &&
+              chrome.runtime.getURL !== undefined
+            ) {
               let url = chrome.runtime.getURL("/index.html");
               window.location = url + "#/identities";
               app.$forceUpdate();
-            }else{
-              window.location = '/#/identities'
+            } else {
+              window.location = "/#/identities";
               app.$forceUpdate();
             }
           } else {
@@ -258,9 +294,14 @@ export default {
         if (app.identity.indexOf("xpub") !== -1) {
           let check = await app.scrypta.readxKey(app.password, app.wallet);
           if (check !== false) {
-            let xSIDS = app.wallet.split(':')
-            let mnemonic = await this.decryptData(xSIDS[1], app.password)
-            let updated = await app.scrypta.buildxSid(app.newpassword, 'latin', false, mnemonic)
+            let xSIDS = app.wallet.split(":");
+            let mnemonic = await this.decryptData(xSIDS[1], app.password);
+            let updated = await app.scrypta.buildxSid(
+              app.newpassword,
+              "latin",
+              false,
+              mnemonic
+            );
             let old = await app.db.get("xsid", "xpub", xSIDS[0]);
             old.wallet = updated.walletstore;
             await app.db.update("xsid", "xpub", xSIDS[0], old);
@@ -377,7 +418,7 @@ export default {
       });
     },
     showPrivateKey() {
-      const app = this
+      const app = this;
       app.$buefy.dialog.prompt({
         message: app.$t("payments.insertpassword"),
         inputAttrs: {
@@ -387,7 +428,12 @@ export default {
         onConfirm: async (password) => {
           let key = await app.scrypta.readKey(password, app.details.wallet);
           if (key !== false) {
-            app.$buefy.dialog.alert(app.$t('identities.privkeyis') + '<br><span style="font-size:12px">' + key.prv + '</span>')
+            app.$buefy.dialog.alert(
+              app.$t("identities.privkeyis") +
+                '<br><span style="font-size:12px">' +
+                key.prv +
+                "</span>"
+            );
           } else {
             app.$buefy.toast.open({
               message: app.$t("identities.wrongpassword"),
@@ -398,7 +444,7 @@ export default {
       });
     },
     showMnemonic() {
-      const app = this
+      const app = this;
       app.$buefy.dialog.prompt({
         message: app.$t("payments.insertpassword"),
         inputAttrs: {
@@ -406,19 +452,24 @@ export default {
         },
         trapFocus: false,
         onConfirm: async (password) => {
-          try{
+          try {
             let key = await app.scrypta.readxKey(password, app.details.wallet);
             if (key !== false) {
-              let xSIDS = app.details.wallet.split(':')
-              let decrypted = await app.scrypta.decryptData(xSIDS[1], password)
-              app.$buefy.dialog.alert(app.$t('identities.mnemonicis') + '<br><span style="font-size:12px">' + decrypted + '</span>')
+              let xSIDS = app.details.wallet.split(":");
+              let decrypted = await app.scrypta.decryptData(xSIDS[1], password);
+              app.$buefy.dialog.alert(
+                app.$t("identities.mnemonicis") +
+                  '<br><span style="font-size:12px">' +
+                  decrypted +
+                  "</span>"
+              );
             } else {
               app.$buefy.toast.open({
                 message: app.$t("identities.wrongpassword"),
                 type: "is-danger",
               });
             }
-          }catch(e){
+          } catch (e) {
             app.$buefy.toast.open({
               message: app.$t("identities.wrongpassword"),
               type: "is-danger",
@@ -427,12 +478,17 @@ export default {
         },
       });
     },
-    showExtendedSid(){
-      const app = this
+    toggleSyncManent() {
+      const app = this;
+      if (app.showSyncManent === false) {
+        app.showSyncManent = true;
+      } else {
+        app.showSyncManent = false;
+      }
     },
-    toggleShamirBackup(){
-      const app = this
-    }
+    toggleShamirBackup() {
+      const app = this;
+    },
   },
 };
 </script>
