@@ -102,7 +102,7 @@
       >
         <div v-on:click="setAsDefault(identity.wallet)">
           <v-gravatar
-            :email="identity.xpub"
+            :email="identity.master"
             style="
               float: left;
               border-radius: 4px;
@@ -244,6 +244,10 @@ export default {
       const app = this;
       app.sid = await app.db.get("wallet");
       app.xsid = await app.db.get("xsid");
+      for(let k in app.xsid){
+        let master = await app.scrypta.deriveKeyfromXPub(app.xsid[k].xpub, 'm/0')
+        app.xsid[k].master = master.pub
+      }
       if (app.showSwitch === true) {
         app.showSwitch = false;
       } else {

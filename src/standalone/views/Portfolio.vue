@@ -9,7 +9,7 @@
             v-bind:key="sidechain.address"
             style="margin-bottom: 15px"
           >
-            <a :href="'/index.html#/planum/' + sidechain.address">
+            <a :href="standaloneURL + '/planum/' + sidechain.address">
               <div class="card">
                 <div class="card-content text-left" style="padding: 10px">
                   <div class="media">
@@ -75,6 +75,7 @@ export default {
       isLogging: true,
       isLoading: true,
       searcher: "",
+      standaloneURL: ""
     };
   },
   computed: {
@@ -91,6 +92,12 @@ export default {
     const app = this;
     app.wallet = await User.auth();
     app.isLogging = false;
+    if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
+      let url = chrome.runtime.getURL("/index.html");
+      app.standaloneURL = url + '#'
+    }else{
+      app.standaloneURL = '/#'
+    }
     app.fetchSidechains();
   },
   methods: {

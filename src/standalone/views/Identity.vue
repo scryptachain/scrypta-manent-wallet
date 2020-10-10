@@ -7,23 +7,26 @@
       <b-tab-item :label="$t('identities.management')">
         <br />
         <b-button v-on:click="setAsDefault" type="is-primary" expanded
-          >SET AS DEFAULT</b-button
+          >{{ $t('identities.actions.setdefault') }}</b-button
         ><br />
         <b-button v-on:click="changeLabel" type="is-primary" expanded
-          >CHANGE LABEL</b-button
+          >{{ $t('identities.actions.changelabel') }}</b-button
         ><br />
         <b-button v-on:click="toggleChangePassword" type="is-primary" expanded
-          >CHANGE PASSWORD</b-button
+          >{{ $t('identities.actions.changepassword') }}</b-button
+        ><br />
+        <b-button v-on:click="showExtendedSid" type="is-primary" expanded
+          >{{ $t('identities.actions.syncmanentapp') }}</b-button
         ><br />
         <b-button v-on:click="deleteIdentity" type="is-primary" expanded
-          >DELETE IDENTITY</b-button
+          >{{ $t('identities.actions.deleteid') }}</b-button
         >
       </b-tab-item>
       <!--<b-tab-item :label="$t('identities.did')">
         <br />
-        <b-button type="is-primary" expanded>REGISTER DID NAME WITH SC</b-button
+        <b-button type="is-primary" expanded>{{ $t('identities.actions.registername') }}</b-button
         ><br />
-        <b-button type="is-primary" expanded>OPEN SCRYPTAID</b-button>
+        <b-button type="is-primary" expanded>{{ $t('identities.actions.showlinkedid') }}</b-button>
       </b-tab-item>-->
       <b-tab-item :label="$t('identities.backup')">
         <br />
@@ -32,28 +35,32 @@
           type="is-primary"
           expanded
           v-on:click="showMnemonic"
-          >SHOW MNEMONIC</b-button
+          >{{ $t('identities.actions.showmnemonic') }}</b-button
         ><br v-if="identity.indexOf('xpub') !== -1" />
         <b-button
           v-if="identity.indexOf('xpub') === -1"
           type="is-primary"
           expanded
           v-on:click="showPrivateKey"
-          >SHOW PRIVATE KEY</b-button
+          >{{ $t('identities.actions.showprivkey') }}</b-button
         ><br v-if="identity.indexOf('xpub') === -1" />
+        <b-button v-on:click="toggleShamirBackup" type="is-primary" expanded
+          >{{ $t('identities.actions.shamirbackup') }}</b-button
+        >
+        <br />
         <b-button
           v-if="identity.indexOf('xpub') === -1"
           type="is-primary"
           expanded
           v-on:click="downloadSid"
-          >BACKUP .SID FILE</b-button
+          >{{ $t('identities.actions.backupsid') }}</b-button
         >
         <b-button
           v-if="identity.indexOf('xpub') !== -1"
           type="is-primary"
           expanded
           v-on:click="downloadxSid"
-          >BACKUP .xSID FILE</b-button
+          >{{ $t('identities.actions.backupxsid') }}</b-button
         ><br />
         <a id="downloadsid" style="display: none"></a>
         <a id="downloadxsid" style="display: none"></a>
@@ -420,6 +427,12 @@ export default {
         },
       });
     },
+    showExtendedSid(){
+      const app = this
+    },
+    toggleShamirBackup(){
+      const app = this
+    }
   },
 };
 </script>

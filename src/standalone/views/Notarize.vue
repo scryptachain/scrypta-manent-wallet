@@ -2,13 +2,11 @@
   <div class="text-left">
     <h1 class="title is-2">
       {{ $t("notarize.notarize") }}
-      <b-button
+      <div
         @click="toggleNew"
-        style="float: right"
-        type="is-primary"
-        size="is-small"
-        ><b-icon style="margin-top: 1px" icon="plus"></b-icon
-      ></b-button>
+        style="float: right; color: #D8213B; cursor:pointer"
+        ><b-icon icon="plus"></b-icon
+      ></div>
     </h1>
     <div v-if="written.length > 0">
       <br>

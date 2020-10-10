@@ -90,6 +90,20 @@
     "identities": {
         "youridentities": "Your identities",
         "legacy": "Legacy addresses",
+        "actions": {
+            "setdefault": "SET AS DEFAULT",
+            "changelabel": "CHANGE LABEL",
+            "changepassword": "CHANGE PASSWORD",
+            "syncmanentapp": "SYNC WITH MANENT APP",
+            "deleteid": "DELETE IDENTITY",
+            "registername": "REGISTER DECENTRALIZED NAME",
+            "showlinkedid": "SHOW LINKED IDENTITIES",
+            "showmnemonic": "SHOW MNEMONIC",
+            "showprivkey": "SHOW PRIVATE KEY",
+            "shamirbackup": "CREATE BACKUP WITH SHAMIR",
+            "backupsid": "BACKUP SID FILE",
+            "backupxsid": "BACKUP xSID FILE"
+        },
         "advanced": "Advanced addresses",
         "addnew": "Add identity",
         "identityselected": "Identity successfully selected!",

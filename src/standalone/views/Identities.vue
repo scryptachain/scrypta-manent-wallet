@@ -2,13 +2,11 @@
   <div class="text-left">
     <h1 class="title is-2">
       {{ $t("identities.youridentities") }}
-      <b-button
+      <div
         @click="toggleLogin"
-        style="float: right"
-        type="is-primary"
-        size="is-small"
-        ><b-icon style="margin-top: 1px" icon="plus"></b-icon
-      ></b-button>
+        style="float: right; color: #D8213B; cursor:pointer"
+        ><b-icon style="" icon="plus"></b-icon
+      ></div>
     </h1>
     <div v-if="sid.length > 0">
       <h1 class="title is-4" style="font-size: 14px !important">
@@ -38,13 +36,11 @@
                   {{ identity.address }}
                   <button v-clipboard="identity.address">copy</button>
                 </p>
-                <a :href="'/index.html#/identity/' + identity.address">
-                  <b-button
-                    style="position: absolute; top: 7px; right: 7px"
-                    type="is-primary"
-                    size="is-small"
-                    ><b-icon style="margin-top: 1px" icon="eye"></b-icon
-                  ></b-button>
+                <a :href="standaloneURL + '/identity/' + identity.address">
+                  <div
+                    style="position: absolute; top: 7px; right: 7px; color: #D8213B"
+                    ><b-icon style="" icon="eye"></b-icon
+                  ></div>
                 </a>
               </div>
             </div>
@@ -82,13 +78,11 @@
                   }}
                   <button v-clipboard="identity.xpub">copy</button>
                 </p>
-                <a :href="'/index.html#/identity/' + identity.xpub">
-                  <b-button
-                    style="position: absolute; top: 7px; right: 7px"
-                    type="is-primary"
-                    size="is-small"
-                    ><b-icon style="margin-top: 1px" icon="eye"></b-icon
-                  ></b-button>
+                <a :href="standaloneURL + '/identity/' + identity.xpub">
+                  <div
+                    style="position: absolute; top: 7px; right: 7px; color: #D8213B"
+                    ><b-icon style="" icon="eye"></b-icon
+                  ></div>
                 </a>
               </div>
             </div>
@@ -132,6 +126,7 @@ export default {
     return {
       scrypta: new ScryptaCore(true),
       db: new ScryptaDB(true),
+      standaloneURL: "",
       showLogin: false,
       address: "",
       wallet: "",
@@ -146,6 +141,12 @@ export default {
     const app = this;
     app.wallet = await User.auth();
     app.isLogging = false;
+    if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
+      let url = chrome.runtime.getURL("/index.html");
+      app.standaloneURL = url + '#'
+    }else{
+      app.standaloneURL = '/#'
+    }
     app.fetchIdentities();
   },
   methods: {
