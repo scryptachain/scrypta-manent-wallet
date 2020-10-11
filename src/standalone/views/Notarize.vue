@@ -230,25 +230,27 @@ export default {
           trapFocus: false,
           onConfirm: async (password) => {
             let key;
+            let SIDS
             if (app.wallet !== false && app.wallet.sid !== undefined) {
               key = await app.scrypta.readKey(password, app.wallet.sid);
               if (key !== false) {
                 key.sid = app.wallet.sid;
               }
-            } else if (app.user.xsid !== undefined) {
+            } else if (app.wallet.xsid !== undefined) {
               let xkey = await app.scrypta.readxKey(password, app.wallet.xsid);
-              if (key !== false) {
+              if (xkey !== false) {
                 key = await app.scrypta.deriveKeyFromSeed(xkey.seed, "m/0");
-                key.sid = await app.scrypta.importPrivateKey(
+                let importkey = await app.scrypta.importPrivateKey(
                   key.prv,
                   password,
                   false
-                );
+                )
+                key.sid = importkey.walletstore
               }
             }
-            let SIDS = key.sid.split(":");
-            key.address = SIDS[0];
             if (key !== false) {
+              let SIDS = key.sid.split(":");
+              key.address = SIDS[0];
               app.isSending = true;
               // WRITING DATA
               let rawdata = app.notarize.message;

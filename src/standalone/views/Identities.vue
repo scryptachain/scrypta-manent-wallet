@@ -54,7 +54,7 @@
       </h1>
       <div
         v-for="identity in xsid"
-        v-bind:key="identity.address"
+        v-bind:key="identity.xpub"
         style="margin-bottom: 15px"
       >
         <div class="card">
@@ -64,7 +64,7 @@
                 <figure style="margin-top: 5px" class="image is-32x32">
                   <v-gravatar
                     style="border-radius: 4px"
-                    :email="identity.xpub"
+                    :email="identity.master"
                   />
                 </figure>
               </div>
@@ -153,7 +153,12 @@ export default {
     async fetchIdentities() {
       const app = this;
       app.sid = await app.db.get("wallet");
-      app.xsid = await app.db.get("xsid");
+      let xsid = await app.db.get("xsid");
+      for(let k in xsid){
+        let master = await app.scrypta.deriveKeyfromXPub(xsid[k].xpub, 'm/0')
+        xsid[k].master = master.pub
+      }
+      app.xsid = xsid
     },
     logWithWallet(value) {
       const app = this;

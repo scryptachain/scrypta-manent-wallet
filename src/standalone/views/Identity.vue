@@ -292,10 +292,10 @@ export default {
         app.newpassword === app.repeatnewpassword
       ) {
         if (app.identity.indexOf("xpub") !== -1) {
-          let check = await app.scrypta.readxKey(app.password, app.wallet);
+          let check = await app.scrypta.readxKey(app.password, app.details.wallet);
           if (check !== false) {
-            let xSIDS = app.wallet.split(":");
-            let mnemonic = await this.decryptData(xSIDS[1], app.password);
+            let xSIDS = app.details.wallet.split(":");
+            let mnemonic = await app.scrypta.decryptData(xSIDS[1], app.password);
             let updated = await app.scrypta.buildxSid(
               app.newpassword,
               "latin",

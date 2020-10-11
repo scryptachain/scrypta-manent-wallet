@@ -219,4 +219,18 @@ html {
   width: 100%;
   text-align: center;
 }
+
+@media screen and (max-width: 768px){
+    .media-content{padding-right:70px;}
+    #nav .mdi-24px.mdi-set, #nav .mdi-24px.mdi:before{font-size:18px!important;}
+    #nav a{font-size:10px!important;}
+    .column{padding:0!important;}
+    .logout{right: 25px!important; top:-52px!important}
+    .avatar{left: 25px!important; top:-52px!important}
+    .logo{margin-top:16px!important;}
+    html{padding-top:0px!important;}
+    .qr{width:100%!important}
+    .modal-card{width:100%!important}
+    .media-left{display:none!important}
+}
 </style>

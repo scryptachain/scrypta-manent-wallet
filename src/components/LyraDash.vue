@@ -75,7 +75,7 @@
                   {{ formatPrice(tx.value).replace("-", "") }} {{ ticker }}
                 </p>
                 <p class="subtitle is-6">
-                  <span v-if="tx.value > 0">{{ $t("from") }}</span>
+                  <span v-if="tx.value > 0">{{ $t("from") }}</span>&nbsp;
                   <span v-if="tx.value <= 0">{{ $t("dashboard.to") }}</span>
                   <b>{{ tx.from.substr(0, 3) }}...{{ tx.from.substr(-3) }}</b>
                 </p>
@@ -226,15 +226,15 @@ export default {
     fetchTransactions() {
       const app = this;
       return new Promise(async (response) => {
-        let balance = await app.scrypta.get("/balance/" + app.wallet.address);
+        let balance = await app.scrypta.get("/balance/" + app.wallet.master);
         app.balance = balance.balance;
         app.options.xaxis.categories = [];
         app.series[0].data = [];
         app.transactions = await app.scrypta.get(
-          "/transactions/" + app.wallet.address
+          "/transactions/" + app.wallet.master
         );
         let transactions = app.transactions.data.reverse();
-        app.unconfirmed = app.transactions.unconfirmed;
+        let unconfirmed = app.transactions.unconfirmed;
         let initDate;
         let endDate;
         let last = transactions.length - 1;
@@ -285,9 +285,10 @@ export default {
           app.options.xaxis.categories.push(parseInt(time));
           app.series[0].data.push(app.graph[time]);
         }
-        if (app.unconfirmed.length > 0) {
-          for (let x in app.unconfirmed) {
-            let transaction = app.unconfirmed[x];
+        if (unconfirmed.length > 0) {
+          app.unconfirmed = []
+          for (let x in unconfirmed) {
+            let transaction = unconfirmed[x];
             if (
               (transaction.to[1] !== undefined &&
                 transaction.from[0] !== transaction.to[1]) ||
