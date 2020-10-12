@@ -1,6 +1,6 @@
 {
   "name": "scrypta-manent-wallet",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service build --mode development --watch",
@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@dicebear/avatars": "^4.2.5",
-    "@scrypta/core": "^2.6.5",
+    "@scrypta/core": "^2.6.6",
     "@scrypta/login": "^1.1.5",
     "apexcharts": "^3.22.0",
     "axios": "^0.20.0",
@@ -41,7 +41,7 @@
     "@vue/cli-plugin-vuex": "~4.5.7",
     "@vue/cli-service": "~4.5.7",
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.10.0",
+    "eslint": "^7.11.0",
     "eslint-plugin-vue": "^7.0.1",
     "sass": "^1.27.0",
     "sass-loader": "^10.0.3",
