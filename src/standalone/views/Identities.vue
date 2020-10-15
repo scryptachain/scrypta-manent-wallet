@@ -140,6 +140,7 @@ export default {
   async mounted() {
     const app = this;
     app.wallet = await User.auth();
+    app.scrypta.staticnodes = true
     app.isLogging = false;
     if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
       let url = chrome.runtime.getURL("/index.html");

@@ -24,7 +24,8 @@
       };
     },
     async mounted() {
-      const app = this;
+      const app = this
+      app.scrypta.staticnodes = true
       app.wallet = await User.auth()
       if(app.wallet !== false){
         app.configs = await User.configs()

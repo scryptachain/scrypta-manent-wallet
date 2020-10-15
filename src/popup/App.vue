@@ -234,6 +234,8 @@ export default {
     } else {
       app.wallet = await app.user.auth();
     }
+     let balance = await app.scrypta.get("/balance/" + app.wallet.master);
+    app.balance = balance.balance;
   },
   methods: {
     async logWithWallet() {
