@@ -263,15 +263,16 @@ export default {
               await localStorage.setItem("default", app.xsid[0].wallet);
               await localStorage.setItem("SID", app.xsid[0].wallet);
             }
-            if (
-              chrome !== undefined &&
-              chrome.runtime !== undefined &&
-              chrome.runtime.getURL !== undefined
-            ) {
-              let url = chrome.runtime.getURL("/index.html");
-              window.location = url + "#/identities";
-              app.$forceUpdate();
-            } else {
+            if (navigator.userAgent.indexOf("Firefox") === -1) {
+              if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
+                let url = chrome.runtime.getURL("/index.html");
+                window.location = url + "#/identities";
+                app.$forceUpdate();
+              }else{
+                window.location = "/#/identities";
+                app.$forceUpdate();
+              }
+            }else{
               window.location = "/#/identities";
               app.$forceUpdate();
             }

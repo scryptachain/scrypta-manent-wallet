@@ -466,9 +466,13 @@ export default {
     },
     hideLogins() {
       this.logins = false;
-      if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
-        let url = chrome.runtime.getURL("/index.html");
-        window.location.href = url;
+      if (navigator.userAgent.indexOf("Firefox") === -1) {
+        if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
+          let url = chrome.runtime.getURL("/index.html");
+          window.location.href = url;
+        }else{
+          window.location.href = '/#/'
+        }
       }else{
         window.location.href = '/#/'
       }

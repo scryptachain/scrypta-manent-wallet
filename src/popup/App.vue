@@ -191,10 +191,15 @@ export default {
   },
   async mounted() {
     const app = this;
-    if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
-      app.standaloneURL = chrome.runtime.getURL("/index.html");
+    if (navigator.userAgent.indexOf("Firefox") === -1) {
+      if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
+        let url = chrome.runtime.getURL("/index.html");
+        app.standaloneURL = url + '#'
+      }else{
+        app.standaloneURL = '/#'
+      }
     }else{
-      app.standaloneURL = '/#/'
+      app.standaloneURL = '/#'
     }
     app.injected = await app.dapp.check();
     if (

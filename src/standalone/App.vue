@@ -165,8 +165,12 @@ export default {
   async mounted() {
     const app = this;
     app.wallet = await app.user.auth();
-    if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
-      app.standaloneURL = chrome.runtime.getURL("/index.html");
+    if (navigator.userAgent.indexOf("Firefox") === -1) {
+      if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
+        app.standaloneURL = chrome.runtime.getURL("/index.html");
+      }else{
+        app.standaloneURL = '/#/'
+      }
     }else{
       app.standaloneURL = '/#/'
     }

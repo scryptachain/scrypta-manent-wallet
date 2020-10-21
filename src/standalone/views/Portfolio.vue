@@ -93,11 +93,15 @@ export default {
     app.wallet = await User.auth();
     app.scrypta.staticnodes = true
     app.isLogging = false;
-    if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
-      let url = chrome.runtime.getURL("/index.html");
-      app.standaloneURL = url + '#'
+    if (navigator.userAgent.indexOf("Firefox") === -1) {
+      if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
+        let url = chrome.runtime.getURL("/index.html");
+        app.standaloneURL = url + '#'
+      }else{
+        app.standaloneURL = '/#'
+      }
     }else{
-      app.standaloneURL = '/#'
+      app.standaloneURL = '/#/'
     }
     app.fetchSidechains();
   },
