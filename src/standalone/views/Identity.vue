@@ -20,9 +20,12 @@
           expanded
           >{{ $t("identities.actions.changepassword") }}</b-button
         ><br />
-        <b-button v-if="identity.indexOf('xpub') === -1" v-on:click="toggleSyncManent" type="is-primary" expanded>{{
-          $t("identities.actions.syncmanentapp")
-        }}</b-button
+        <b-button
+          v-if="identity.indexOf('xpub') === -1"
+          v-on:click="toggleSyncManent"
+          type="is-primary"
+          expanded
+          >{{ $t("identities.actions.syncmanentapp") }}</b-button
         ><br v-if="identity.indexOf('xpub') === -1" />
         <b-button v-on:click="deleteIdentity" type="is-primary" expanded>{{
           $t("identities.actions.deleteid")
@@ -154,7 +157,7 @@
             </p>
             <button type="button" class="delete" @click="toggleSyncManent" />
           </header>
-          <section class="modal-card-body text-center" style="width:350px;">
+          <section class="modal-card-body text-center" style="width: 350px">
             <p>{{ $t("identities.syncmanentinstructions") }}</p>
             <vue-qrcode style="width: 100%" :value="wallet.sid" /><br />
           </section>
@@ -197,7 +200,7 @@ export default {
   async mounted() {
     const app = this;
     app.wallet = await User.auth();
-    app.scrypta.staticnodes = true
+    app.scrypta.staticnodes = true;
     app.isLogging = false;
     app.identity = app.$route.params.identity;
     app.getIdentity();
@@ -264,15 +267,19 @@ export default {
               await localStorage.setItem("SID", app.xsid[0].wallet);
             }
             if (navigator.userAgent.indexOf("Firefox") === -1) {
-              if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
+              if (
+                chrome !== undefined &&
+                chrome.runtime !== undefined &&
+                chrome.runtime.getURL !== undefined
+              ) {
                 let url = chrome.runtime.getURL("/index.html");
                 window.location = url + "#/identities";
                 app.$forceUpdate();
-              }else{
+              } else {
                 window.location = "/#/identities";
                 app.$forceUpdate();
               }
-            }else{
+            } else {
               window.location = "/#/identities";
               app.$forceUpdate();
             }
@@ -294,10 +301,16 @@ export default {
         app.newpassword === app.repeatnewpassword
       ) {
         if (app.identity.indexOf("xpub") !== -1) {
-          let check = await app.scrypta.readxKey(app.password, app.details.wallet);
+          let check = await app.scrypta.readxKey(
+            app.password,
+            app.details.wallet
+          );
           if (check !== false) {
             let xSIDS = app.details.wallet.split(":");
-            let mnemonic = await app.scrypta.decryptData(xSIDS[1], app.password);
+            let mnemonic = await app.scrypta.decryptData(
+              xSIDS[1],
+              app.password
+            );
             let updated = await app.scrypta.buildxSid(
               app.newpassword,
               "latin",
@@ -459,12 +472,19 @@ export default {
             if (key !== false) {
               let xSIDS = app.details.wallet.split(":");
               let decrypted = await app.scrypta.decryptData(xSIDS[1], password);
-              app.$buefy.dialog.alert(
-                app.$t("identities.mnemonicis") +
-                  '<br><span style="font-size:12px">' +
-                  decrypted +
-                  "</span>"
-              );
+              if (decrypted.split(" ").length === 24) {
+                app.$buefy.dialog.alert(
+                  app.$t("identities.mnemonicis") +
+                    '<br><span style="font-size:12px">' +
+                    decrypted +
+                    "</span>"
+                );
+              } else {
+                app.$buefy.toast.open({
+                  message: app.$t("identities.wrongpassword"),
+                  type: "is-danger",
+                });
+              }
             } else {
               app.$buefy.toast.open({
                 message: app.$t("identities.wrongpassword"),

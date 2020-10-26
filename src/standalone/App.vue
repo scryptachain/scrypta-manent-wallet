@@ -196,6 +196,7 @@ export default {
           localStorage.setItem("wallet", "[]");
           localStorage.setItem("xsid", "[]");
           window.location = app.standaloneURL;
+          location.reload()
         },
       });
     },

@@ -388,6 +388,7 @@ export default {
           app.mnemonic,
           app.label
         );
+        console.log(app.newSeed, app.password)
         app.$emit("logged", app.newSeed.walletstore);
         app.created = true;
       } else {
