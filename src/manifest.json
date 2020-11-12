@@ -36,7 +36,8 @@
       "*://*.scrypta.me/*", 
       "*://*.planum.dev/*", 
       "*://*.electio.app/*", 
-      "*://*.documenta.app/*"
+      "*://*.documenta.app/*", 
+      "*://*.silegal.app/*"
     ],
     "js" : ["./js/background.js"]
   }],
