@@ -28,20 +28,83 @@
           <div class="column"></div>
           <div class="column is-three-quarters">
             <div class="card">
-              <v-gravatar
-                class="avatar"
-                style="
-                  position: absolute;
-                  cursor: pointer;
-                  top: -60px;
-                  height: 32px;
-                  width: 32px;
-                  z-index: 25;
-                  left: 0px;
-                  border-radius: 3px;
-                "
-                :email="wallet.master"
-              />
+              <div
+                style="position: absolute; top: -60px; z-index: 25; left: 0px"
+              >
+                <b-dropdown aria-role="list">
+                  <button
+                    style="border: 0!important; border-radius:3px; background: transparent"
+                    slot="trigger"
+                  >
+                    <v-gravatar
+                      class="avatar"
+                      style="
+                        cursor: pointer;
+                        height: 32px;
+                        width: 32px;
+                        border-radius: 3px;
+                      "
+                      :email="wallet.master"
+                    />
+                  </button>
+                  <b-dropdown-item
+                    aria-role="listitem"
+                    v-for="identity in xsid"
+                    v-bind:key="identity.wallet"
+                    style="cursor: pointer"
+                  >
+                    <div v-on:click="setAsDefault(identity.wallet)">
+                      <v-gravatar
+                        :email="identity.master"
+                        style="
+                          float: left;
+                          border-radius: 4px;
+                          margin-top: -2px;
+                          margin-right: 8px;
+                          width: 35px;
+                          height: 35px;
+                          text-align:left!important;
+                        "
+                      />
+                      <b style="font-size: 12px">{{ identity.label }}</b
+                      ><br />
+                      <span style="font-size: 9px"
+                        >{{ identity.xpub.substr(0, 10) }}...{{
+                          identity.xpub.substr(-10)
+                        }}</span
+                      >
+                    </div>
+                  </b-dropdown-item>
+                  <b-dropdown-item
+                    aria-role="listitem"
+                    v-for="identity in sid"
+                    v-bind:key="identity.wallet"
+                    style="cursor: pointer"
+                  >
+                    <div v-on:click="setAsDefault(identity.wallet)">
+                      <v-gravatar
+                        :email="identity.address"
+                        style="
+                          float: left;
+                          border-radius: 4px;
+                          margin-top: -2px;
+                          margin-right: 8px;
+                          width: 35px;
+                          height: 35px;
+                          text-align:left!important;
+                        "
+                      />
+                      <b style="font-size: 12px">{{ identity.label }}</b
+                      ><br />
+                      <span style="font-size: 9px"
+                        >{{ identity.address.substr(0, 10) }}...{{
+                          identity.address.substr(-10)
+                        }}</span
+                      >
+                    </div>
+                  </b-dropdown-item>
+                </b-dropdown>
+              </div>
               <a href="#" v-on:click="logout">
                 <b-icon
                   icon="logout"
@@ -110,7 +173,10 @@
                       </div>
                       <div class="column">
                         <router-link to="/notarize"
-                          ><b-icon class="menu-icon" icon="package-down"></b-icon>
+                          ><b-icon
+                            class="menu-icon"
+                            icon="package-down"
+                          ></b-icon>
                           <br />
                           {{ $t("menu.notarize") }}</router-link
                         >
@@ -141,6 +207,7 @@ const ScryptaCore = require("@scrypta/core");
 const User = require("../libs/user");
 import Create from "../components/Create.vue";
 import Login from "../components/Login.vue";
+const ScryptaDB = require("../libs/db");
 
 export default {
   components: { Create, Login },
@@ -149,6 +216,7 @@ export default {
     return {
       standaloneURL: "",
       scrypta: new ScryptaCore(true),
+            db: new ScryptaDB(true),
       user: User,
       error: false,
       recover: false,
@@ -159,20 +227,28 @@ export default {
       passwordrepeat: "",
       avatar: "",
       mnemonic: "",
+      sid: [],
+      xsid: [],
       label: "New Identity",
     };
   },
   async mounted() {
     const app = this;
     app.wallet = await app.user.auth();
+    app.sid = await app.db.get("wallet");
+    app.xsid = await app.db.get("xsid");
     if (navigator.userAgent.indexOf("Firefox") === -1) {
-      if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
+      if (
+        chrome !== undefined &&
+        chrome.runtime !== undefined &&
+        chrome.runtime.getURL !== undefined
+      ) {
         app.standaloneURL = chrome.runtime.getURL("/index.html");
-      }else{
-        app.standaloneURL = '/#/'
+      } else {
+        app.standaloneURL = "/#/";
       }
-    }else{
-      app.standaloneURL = '/#/'
+    } else {
+      app.standaloneURL = "/#/";
     }
   },
   methods: {
@@ -186,6 +262,14 @@ export default {
       }
       window.location = app.standaloneURL;
     },
+    async setAsDefault(wallet) {
+      const app = this;
+      localStorage.setItem("default", wallet);
+      app.wallet = await app.user.auth();
+      let balance = await app.scrypta.get("/balance/" + app.wallet.master);
+      app.balance = balance.balance;
+      location.reload()
+    },
     logout() {
       const app = this;
       app.$buefy.dialog.confirm({
@@ -196,7 +280,7 @@ export default {
           localStorage.setItem("wallet", "[]");
           localStorage.setItem("xsid", "[]");
           window.location = app.standaloneURL;
-          location.reload()
+          location.reload();
         },
       });
     },
@@ -209,7 +293,7 @@ export default {
   font-size: 12px;
 }
 html {
-  background-color: #edeae5!important;
+  background-color: #edeae5 !important;
   background-size: cover;
   background-position: center;
   background-attachment: fixed !important;
@@ -224,18 +308,47 @@ html {
   width: 100%;
   text-align: center;
 }
+.dropdown-item{
+    text-align: left!important;
+    line-height: 15px!important;
+}
 
-@media screen and (max-width: 768px){
-    .media-content{padding-right:70px;}
-    #nav .mdi-24px.mdi-set, #nav .mdi-24px.mdi:before{font-size:18px!important;}
-    #nav a{font-size:10px!important;}
-    .column{padding:0!important;}
-    .logout{right: 25px!important; top:-52px!important}
-    .avatar{left: 25px!important; top:-52px!important}
-    .logo{margin-top:16px!important;}
-    html{padding-top:0px!important;}
-    .qr{width:100%!important}
-    .modal-card{width:100%!important}
-    .media-left{display:none!important}
+@media screen and (max-width: 768px) {
+  .media-content {
+    padding-right: 70px;
+  }
+  #nav .mdi-24px.mdi-set,
+  #nav .mdi-24px.mdi:before {
+    font-size: 18px !important;
+  }
+  #nav a {
+    font-size: 10px !important;
+  }
+  .column {
+    padding: 0 !important;
+  }
+  .logout {
+    right: 25px !important;
+    top: -52px !important;
+  }
+  .avatar {
+    left: 25px !important;
+    top: -52px !important;
+  }
+  .logo {
+    margin-top: 16px !important;
+  }
+  html {
+    padding-top: 0px !important;
+  }
+  .qr {
+    width: 100% !important;
+  }
+  .modal-card {
+    width: 100% !important;
+  }
+  .media-left {
+    display: none !important;
+  }
 }
 </style>

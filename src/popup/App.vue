@@ -239,7 +239,7 @@ export default {
     } else {
       app.wallet = await app.user.auth();
     }
-     let balance = await app.scrypta.get("/balance/" + app.wallet.master);
+    let balance = await app.scrypta.get("/balance/" + app.wallet.master);
     app.balance = balance.balance;
   },
   methods: {
@@ -306,6 +306,8 @@ export default {
       const app = this;
       localStorage.setItem("default", wallet);
       app.wallet = await app.user.auth();
+      let balance = await app.scrypta.get("/balance/" + app.wallet.master);
+      app.balance = balance.balance;
       app.useIdentity()
       app.toggleSwitch()
     },
