@@ -23,6 +23,7 @@
       >
         <div v-clipboard="wallet.master" style="cursor: pointer">
           <v-gravatar
+            v-on:click="toggleSwitch"
             :email="wallet.master"
             style="
               float: left;
@@ -85,16 +86,15 @@
             >{{ $t("popup.disconnect") }}</b-button
           >
         </div>
-        <br />
-        <span
-          style="color: #d8213b; cursor: pointer"
-          v-on:click="toggleSwitch"
-          >{{ $t("popup.switch") }}</span
-        >
       </div>
     </div>
     <div v-if="wallet && showSwitch" style="text-align: left;">
-      <div class="text-center" style="margin-top:-15px"><b>{{ $t('popup.selectid') }}</b></div><hr>
+      <div class="text-center" style="margin-top:-15px">
+        <div v-on:click="toggleSwitch" style="position:absolute; top: 25px; left:15px">
+          <img src="/img/back.png" style="height:20px; cursor: pointer">
+        </div>
+        <b>{{ $t('popup.selectid') }}</b>
+      </div><hr>
       <div
         v-for="identity in xsid"
         v-bind:key="identity.wallet"
@@ -147,10 +147,6 @@
           ><br><br>
         </div>
       </div>
-      <hr style="margin-top:-5px" />
-      <div class="text-center" style="color: #d8213b; cursor: pointer" v-on:click="toggleSwitch">{{
-        $t("popup.back")
-      }}</div>
     </div>
   </div>
 </template>
