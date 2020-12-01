@@ -65,7 +65,7 @@
                   >
                     <div v-on:click="setAsDefault(identity.wallet)">
                       <v-gravatar
-                        :email="identity.master"
+                        :email="identity.xpub"
                         style="
                           float: left;
                           border-radius: 300px;
