@@ -64,7 +64,7 @@
                 <figure style="margin:0!important; margin-top: 0px" class="image is-32x32">
                   <v-gravatar
                     style="border-radius: 300px; margin:6px!important;"
-                    :email="identity.address"
+                    :email="identity.xpub"
                   />
                 </figure>
               </div>
