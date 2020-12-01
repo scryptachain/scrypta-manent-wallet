@@ -26,7 +26,7 @@
             :email="wallet.master"
             style="
               float: left;
-              border-radius: 4px;
+              border-radius: 300px;
               margin-top: -2px;
               margin-right: 8px;
               width: 35px;
@@ -105,7 +105,7 @@
             :email="identity.master"
             style="
               float: left;
-              border-radius: 4px;
+              border-radius: 300px;
               margin-top: -2px;
               margin-right: 8px;
               width: 35px;
@@ -131,7 +131,7 @@
             :email="identity.address"
             style="
               float: left;
-              border-radius: 4px;
+              border-radius: 300px;
               margin-top: -2px;
               margin-right: 8px;
               width: 35px;

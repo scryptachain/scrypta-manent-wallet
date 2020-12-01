@@ -20,10 +20,10 @@
         <div class="card">
           <div class="card-content text-left" style="padding: 10px">
             <div class="media">
-              <div class="media-left">
-                <figure style="margin-top: 5px" class="image is-32x32">
+              <div class="media-left" style="width:50px!important; margin:0; padding:0;">
+                <figure style="margin:0!important; margin-top: 0px" class="image is-32x32">
                   <v-gravatar
-                    style="border-radius: 4px"
+                    style="border-radius: 300px; margin:6px!important;"
                     :email="identity.address"
                   />
                 </figure>
@@ -60,11 +60,11 @@
         <div class="card">
           <div class="card-content text-left" style="padding: 10px">
             <div class="media">
-              <div class="media-left">
-                <figure style="margin-top: 5px" class="image is-32x32">
+              <div class="media-left" style="width:50px!important; margin:0; padding:0;">
+                <figure style="margin:0!important; margin-top: 0px" class="image is-32x32">
                   <v-gravatar
-                    style="border-radius: 4px"
-                    :email="identity.master"
+                    style="border-radius: 300px; margin:6px!important;"
+                    :email="identity.address"
                   />
                 </figure>
               </div>

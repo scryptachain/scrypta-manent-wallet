@@ -22,27 +22,37 @@
       </div>
     </div>
     <div v-if="wallet">
-      <img class="logo" src="../assets/logo.png" width="150px" /><br /><br />
       <div class="container">
         <div class="columns">
-          <div class="column"></div>
-          <div class="column is-three-quarters">
-            <div class="card">
-              <div
-                style="position: absolute; top: -60px; z-index: 25; left: 0px"
-              >
-                <b-dropdown aria-role="list">
+          <div class="column">
+            <div></div>
+          </div>
+          <div class="column is-three-quarters" style="text-align: center">
+            <div class="columns">
+              <div class="column">
+                <b-dropdown aria-role="list" style="float:left;">
                   <button
-                    style="border: 0!important; border-radius:3px; background: transparent"
+                    style="
+                      border: 0 !important;
+                      border-radius: 300px;
+                      margin:0px!important;
+                      padding:0px!important;
+                      background: transparent;
+                      padding-top:4px;
+                    "
                     slot="trigger"
                   >
                     <v-gravatar
                       class="avatar"
                       style="
-                        cursor: pointer;
-                        height: 32px;
-                        width: 32px;
-                        border-radius: 3px;
+                          float: left;
+                          border-radius: 300px;
+                          margin:0px!important;
+                          margin-top:-4px!important;
+                          padding:0!important;
+                          width: 35px;
+                          height: 35px;
+                          text-align: left !important;
                       "
                       :email="wallet.master"
                     />
@@ -58,12 +68,12 @@
                         :email="identity.master"
                         style="
                           float: left;
-                          border-radius: 4px;
+                          border-radius: 300px;
                           margin-top: -2px;
                           margin-right: 8px;
                           width: 35px;
                           height: 35px;
-                          text-align:left!important;
+                          text-align: left !important;
                         "
                       />
                       <b style="font-size: 12px">{{ identity.label }}</b
@@ -82,18 +92,14 @@
                     style="cursor: pointer"
                   >
                     <div v-on:click="setAsDefault(identity.wallet)">
-                      <v-gravatar
-                        :email="identity.address"
-                        style="
+                      <v-gravatar style="
                           float: left;
-                          border-radius: 4px;
+                          border-radius: 300px;
                           margin-top: -2px;
                           margin-right: 8px;
                           width: 35px;
                           height: 35px;
-                          text-align:left!important;
-                        "
-                      />
+                          text-align: left !important;" :email="identity.address" />
                       <b style="font-size: 12px">{{ identity.label }}</b
                       ><br />
                       <span style="font-size: 9px"
@@ -105,20 +111,28 @@
                   </b-dropdown-item>
                 </b-dropdown>
               </div>
-              <a href="#" v-on:click="logout">
-                <b-icon
-                  icon="logout"
-                  class="logout"
-                  size="is-medium"
-                  style="
-                    position: absolute;
-                    cursor: pointer;
-                    top: -60px;
-                    z-index: 25;
-                    right: 0px;
-                  "
-                ></b-icon
-              ></a>
+              <div class="column">
+                <img
+                  class="logo"
+                  src="../assets/logo.png"
+                  width="150px"
+                /><br /><br />
+              </div>
+              <div class="column">
+                <a href="#" v-on:click="logout">
+                  <b-icon icon="logout" style="float:right" class="logout" size="is-medium"></b-icon
+                ></a>
+              </div>
+            </div>
+          </div>
+          <div class="column"></div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="columns">
+          <div class="column"></div>
+          <div class="column is-three-quarters">
+            <div class="card">
               <div class="card-content">
                 <div class="content">
                   <div
@@ -216,7 +230,7 @@ export default {
     return {
       standaloneURL: "",
       scrypta: new ScryptaCore(true),
-            db: new ScryptaDB(true),
+      db: new ScryptaDB(true),
       user: User,
       error: false,
       recover: false,
@@ -268,7 +282,7 @@ export default {
       app.wallet = await app.user.auth();
       let balance = await app.scrypta.get("/balance/" + app.wallet.master);
       app.balance = balance.balance;
-      location.reload()
+      location.reload();
     },
     logout() {
       const app = this;
@@ -308,9 +322,9 @@ html {
   width: 100%;
   text-align: center;
 }
-.dropdown-item{
-    text-align: left!important;
-    line-height: 15px!important;
+.dropdown-item {
+  text-align: left !important;
+  line-height: 15px !important;
 }
 
 @media screen and (max-width: 768px) {
