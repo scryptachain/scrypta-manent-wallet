@@ -262,7 +262,7 @@ export default {
         app.standaloneURL = "/#/";
       }
     } else {
-      app.standaloneURL = "/#/";
+      app.standaloneURL = "index.html#";
     }
   },
   methods: {
