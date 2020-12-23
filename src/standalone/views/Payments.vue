@@ -127,8 +127,8 @@ export default {
         let ban = ["register:turinglabs"]
         let filtered = []
         app.names.map(name => {
-          if(ban.indexOf(name.name) === -1 && (name.name.indexOf(app.name.toLowerCase()) >= 0)){
-            filtered.push(name.name)
+          if(ban.indexOf(name.name) === -1 && (name.name.toLowerCase().indexOf(app.name.toLowerCase()) >= 0)){
+            filtered.push(name.name.toLowerCase())
           }
         })
         return filtered
@@ -151,6 +151,7 @@ export default {
         registered.push(response[k])
       }
     }
+    console.log(registered)
     app.names = registered
     app.fetchSidechains();
   },
