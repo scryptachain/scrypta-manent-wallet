@@ -35,7 +35,7 @@
         "createnew": "Create new identity",
         "manentapp": "Manent App",
         "import": "Import identity",
-        "sidfile": "Stored .sid file",
+        "sidfile": "Stored .sid or .xsid file",
         "privkey": "Private key",
         "cardwallet": "Card Wallet",
         "backtoselection": "Go back",
