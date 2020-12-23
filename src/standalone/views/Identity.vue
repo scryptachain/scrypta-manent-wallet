@@ -31,12 +31,35 @@
           $t("identities.actions.deleteid")
         }}</b-button>
       </b-tab-item>
-      <!--<b-tab-item :label="$t('identities.did')">
+      <b-tab-item
+        v-if="identity.indexOf('xpub') !== -1"
+        :label="$t('identities.did')"
+      >
         <br />
-        <b-button type="is-primary" expanded>{{ $t('identities.actions.registername') }}</b-button
-        ><br />
-        <b-button type="is-primary" expanded>{{ $t('identities.actions.showlinkedid') }}</b-button>
-      </b-tab-item>-->
+        <p>
+          Those names are managed by
+          <a href="https://names.scryptachain.org" target="_blank"
+            >Scrypta Decentralized Names</a
+          >
+          dApp and will allow people find you by using this name.
+          <span style="color: #f00"
+            >Remember that those names are
+            <span style="text-decoration: underline">public</span> and
+            <span style="text-decoration: underline">immutable</span>, please
+            use the service only if understand and accept that condition.</span
+          >
+        </p>
+        <b-table :data="names" :columns="columns"></b-table>
+        <div v-if="names.length === 0" style="text-align: center">
+          Nothing registered yet, please register a name first.<br /><br />
+        </div>
+        <b-button
+          v-on:click="showRegistrationModal = true"
+          type="is-primary"
+          expanded
+          >REGISTER NEW NAME</b-button
+        >
+      </b-tab-item>
       <b-tab-item :label="$t('identities.backup')">
         <br />
         <b-button
@@ -164,6 +187,66 @@
         </div>
       </template>
     </b-modal>
+    <b-modal
+      v-model="showRegistrationModal"
+      has-modal-card
+      trap-focus
+      :destroy-on-hide="true"
+      aria-role="dialog"
+      aria-modal
+    >
+      <template>
+        <div class="modal-card" style="width: auto">
+          <header class="modal-card-head">
+            <p class="modal-card-title">Register name</p>
+            <button type="button" class="delete" @click="showRegistrationModal = false" />
+          </header>
+          <section class="modal-card-body text-center" style="width: 450px">
+            <div v-if="!canRegister">
+              If the name is available the registration will cost 10 LYRA,
+              please make sure you have enough balance.
+              <br /><br />
+              <b-input
+                type="text"
+                v-model="name"
+                placeholder="Search a name here..."
+                required
+              >
+              </b-input>
+              <br />
+              <b-button
+                type="is-primary"
+                expanded
+                v-if="!isSearching"
+                v-on:click="searchName"
+                >CHECK AVAILABILITY</b-button
+              >
+            </div>
+            <div v-if="canRegister">
+              You're registering <b>{{ name }}</b> spending 10 LYRA.
+              <br /><br />
+              <input
+                type="password"
+                v-model="password"
+                class="input"
+                placeholder="Insert wallet password here..."
+                password-reveal
+              >
+              <br /><br>
+              <b-button
+                type="is-primary"
+                expanded
+                v-if="!isRegistering"
+                v-on:click="registerName"
+                >REGISTER NAME</b-button
+              >
+            </div>
+            <div v-if="isRegistering">Registering, please wait...</div>
+            <div v-if="isSearching">Searching, please wait...</div>
+          </section>
+        </div>
+      </template>
+    </b-modal>
   </div>
 </template>
 
@@ -184,18 +267,44 @@ export default {
       address: "",
       wallet: "",
       identity: "",
+      isRegistering: false,
+      isSearching: false,
+      canRegister: false,
       showChangePassword: false,
       showSyncManent: false,
+      showRegistrationModal: false,
       details: {},
+      searchResponse: {},
       sid: [],
       xsid: [],
       isLogging: true,
       isLoading: true,
       searcher: "",
       password: "",
+      name: "",
       newpassword: "",
       repeatnewpassword: "",
+      names: [],
+      columns: [
+        {
+          field: "uuid",
+          label: "UUID",
+          width: "180",
+        },
+        {
+          field: "name",
+          label: "Registered name",
+        },
+      ],
     };
+  },
+  watch: {
+    name() {
+      const app = this;
+      app.name = app.name.toLowerCase();
+      app.name = app.name.replace(/ /g, "-");
+      app.name = app.name.replace(/[^\w\s]/gi, "");
+    },
   },
   async mounted() {
     const app = this;
@@ -218,8 +327,130 @@ export default {
       const app = this;
       if (app.identity.indexOf("xpub") !== -1) {
         app.details = await app.db.get("xsid", "xpub", app.identity);
+        let ban = ["register:turinglabs"];
+        let address = await app.scrypta.createAddress("-", false);
+        let request = await app.scrypta.createContractRequest(
+          address.walletstore,
+          "-",
+          {
+            contract: "LcD7AGaY74xvVxDg3NkKjfP6QpG8Pmxpnu",
+            function: "names",
+            params: {},
+          }
+        );
+        let response = await app.scrypta.sendContractRequest(request);
+        let registered = [];
+        let master = await app.scrypta.deriveKeyfromXPub(app.identity, "m/0");
+        for (let k in response) {
+          if (
+            response[k].owner === master.pub &&
+            registered.indexOf(response[k].name) === -1
+          ) {
+            registered.push(response[k]);
+          }
+        }
+        app.names = registered;
       } else {
         app.details = await app.db.get("wallet", "address", app.identity);
+      }
+    },
+    async searchName() {
+      const app = this;
+      if (!app.isSearching) {
+        app.isSearching = true;
+        app.name = app.name.toLowerCase();
+        app.name = app.name.replace(/ /g, "-");
+        app.name = app.name.replace(/[^\w\s]/gi, "");
+        let address = await app.scrypta.createAddress("-", false);
+        let request = await app.scrypta.createContractRequest(
+          address.walletstore,
+          "-",
+          {
+            contract: "LcD7AGaY74xvVxDg3NkKjfP6QpG8Pmxpnu",
+            function: "search",
+            params: { name: app.name },
+          }
+        );
+        let response = await app.scrypta.sendContractRequest(request);
+        if (response.address === undefined) {
+          app.$buefy.toast.open({
+            message: "This name is available! Register it!",
+            type: "is-success",
+          });
+          app.canRegister = true;
+        } else {
+          app.$buefy.toast.open({
+            message: "Sorry, this name isn't available.",
+            type: "is-danger",
+          });
+        }
+        app.isSearching = false;
+      }
+    },
+    async registerName() {
+      const app = this;
+      let master = await app.scrypta.readxKey(app.password, app.details.wallet);
+      if (master !== false) {
+        let key = await app.scrypta.deriveKeyFromSeed(master.seed, "m/0");
+        let masterkey = await app.scrypta.importPrivateKey(key.prv, "-", false);
+        let balance = await app.scrypta.get("/balance/" + key.pub);
+        app.isRegistering = true
+        if (balance.balance >= 10.002) {
+          let fee = await app.scrypta.send(
+            masterkey.walletstore,
+            "-",
+            "LSJq6a6AMigCiRHGrby4TuHeGirJw2PL5c",
+            10
+          );
+          if (fee.length === 64) {
+            setTimeout(async function () {
+              let written = await app.scrypta.write(
+                masterkey.walletstore,
+                "-",
+                "register:" + app.name,
+                "",
+                "",
+                "names://"
+              );
+              if (written.txs[0].length === 64) {
+                app.$buefy.toast.open({
+                  message: "Name registered, well done!",
+                  type: "is-success",
+                });
+                app.password = "";
+                app.name = "";
+                app.isRegistering = false;
+                setTimeout(function(){
+                  app.getIdentity();
+                }, 1000)
+              } else {
+                app.isRegistering = false;
+                app.$buefy.toast.open({
+                  message: "Something goes wrong, please retry!",
+                  type: "is-danger",
+                });
+              }
+            }, 1500);
+          } else {
+            app.isRegistering = false;
+            app.$buefy.toast.open({
+              message: "Something goes wrong, please retry!",
+              type: "is-danger",
+            });
+          }
+        } else {
+          app.isRegistering = false;
+          app.$buefy.toast.open({
+            message: "Not enough funds!",
+            type: "is-danger",
+          });
+        }
+      } else {
+        app.isRegistering = false;
+        app.$buefy.toast.open({
+          message: "Wrong password!",
+          type: "is-danger",
+        });
       }
     },
     setAsDefault() {

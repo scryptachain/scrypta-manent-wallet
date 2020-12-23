@@ -109,7 +109,7 @@
         "identityselected": "Identity successfully selected!",
         "manage": "Manage ID:",
         "management": "Management",
-        "did": "Decentralized identity",
+        "did": "Decentralized name",
         "backup": "Backup",
         "continuedelete": "Do you really want to delete this identity?<br>This operation <b>can't be undone</b>!",
         "deleted": "Identity successfully deleted",

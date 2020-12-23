@@ -6,6 +6,20 @@
           <b-tab-item :label="$t('payments.send')">
             <br />
             <h1 class="title is-2">{{ $t("payments.makepayment") }}</h1>
+            <b-field label="Send to user">
+              <b-autocomplete
+                  v-model="name"
+                  :data="filteredNameObj"
+                  placeholder="Search an user by its name"
+                  icon="magnify"
+                  clearable
+                  @select="option => selected = option">
+                  <template slot="empty">No results found</template>
+              </b-autocomplete>
+            </b-field>
+            <b-field :label="'Send to address'">
+              <b-input class="text-left" v-model="payment.to"></b-input>
+            </b-field>
             <b-field :label="$t('payments.asset')">
               <b-select
                 v-model="selectedasset"
@@ -21,9 +35,6 @@
                   {{ sidechain.name }} ({{ sidechain.address }})
                 </option>
               </b-select>
-            </b-field>
-            <b-field :label="$t('payments.to')">
-              <b-input class="text-left" v-model="payment.to"></b-input>
             </b-field>
             <div style="position: relative">
               <div
@@ -93,6 +104,9 @@ export default {
       address: "",
       wallet: "",
       sidechains: [],
+      names: [],
+      name: "", 
+      selected: null,
       isLogging: true,
       isLoading: true,
       isSending: false,
@@ -107,6 +121,19 @@ export default {
       },
     };
   },
+  computed: {
+      filteredNameObj() {
+        const app = this
+        let ban = ["register:turinglabs"]
+        let filtered = []
+        app.names.map(name => {
+          if(ban.indexOf(name.name) === -1 && (name.name.indexOf(app.name.toLowerCase()) >= 0)){
+            filtered.push(name.name)
+          }
+        })
+        return filtered
+      }
+  },
   async mounted() {
     const app = this;
     app.wallet = await User.auth();
@@ -114,9 +141,28 @@ export default {
     app.isLogging = false;
     let balancelyra = await app.scrypta.get("/balance/" + app.wallet.master);
     app.assetbalance = balancelyra.balance;
+    let ban = ["register:turinglabs"]
+    let address = await app.scrypta.createAddress('-', false)
+    let request = await app.scrypta.createContractRequest(address.walletstore, '-', { contract: "LcD7AGaY74xvVxDg3NkKjfP6QpG8Pmxpnu", function: "names", params: {} })
+    let response = await app.scrypta.sendContractRequest(request)
+    let registered = []
+    for (let k in response) {
+      if (response[k].owner !== app.wallet.master && registered.indexOf(response[k].name) === -1) {
+        registered.push(response[k])
+      }
+    }
+    app.names = registered
     app.fetchSidechains();
   },
   watch: {
+    name () {
+      const app = this
+      app.names.map(name => {
+        if(name.name === app.name){
+          app.payment.to = name.owner
+        }
+      })
+    },
     selectedasset: async function (change) {
       const app = this;
       if (change === "LYRA") {
