@@ -475,7 +475,7 @@ export default {
           window.location.href = '/#/'
         }
       }else{
-        window.location.href = '/#/'
+        window.location.href = 'index.html#/'
       }
     },
     loadWalletFromFile() {

@@ -242,7 +242,7 @@ export default {
           window.open('/#/login', "_self")
         }
       }else{
-        window.open('/#/login', "_self")
+        window.open('index.html#/login', "_blank")
       }
     },
     hideLogins() {
