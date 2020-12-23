@@ -302,7 +302,6 @@ export default {
     name() {
       const app = this;
       app.name = app.name.toLowerCase();
-      app.name = app.name.replace(/ /g, "-");
       app.name = app.name.replace(/[^\w\s]/gi, "");
     },
   },
