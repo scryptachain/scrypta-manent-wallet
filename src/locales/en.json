@@ -2,7 +2,7 @@
     "popup": {
         "useidentity": "USE IDENTITY",
         "compatible": "Visiting compatible dApp:",
-        "connected": "Connected with dApp:",
+        "connected": "Connected dApp:",
         "disconnect": "Disconnect dApp",
         "updatedversionfound": "We've found a different version of wallet in dApp, do you want to sync with local one?",
         "updateidentity": "UPDATE IDENTITY",
@@ -11,7 +11,14 @@
         "switch": "Switch identity",
         "back": "Go Back",
         "selectid": "Select an Identity",
-        "balance": "Balance"
+        "balance": "Balance",
+        "tosign": "Requires to create a transaction",
+        "dismiss": "Dismiss transaction",
+        "sign": "Sign transaction",
+        "insertpassword": "Insert wallet password",
+        "sendtransaction": "Send transaction",
+        "transactionsent": "Transaction sent successfully!",
+        "transactionerror": "Error while sending transaction, retry."
     },
     "create": {
         "hello": "Create new Scrypta Identity",

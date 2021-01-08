@@ -46,13 +46,14 @@
           margin-top: 20px;
           padding-top: 20px;
         "
-      >  
-        <div style="margin-top:5px">
-          <b>{{ $t('popup.balance') }}</b><br>
+      >
+        <div style="margin-top: 5px" v-if="!tosign.message || !tosign.tosign">
+          <b>{{ $t("popup.balance") }}</b
+          ><br />
           {{ balance }} LYRA
+          <hr />
         </div>
         <div v-if="injected !== undefined && injected.dapp !== undefined">
-          <hr>
           <div style="margin: 15px 0">
             <span v-if="!injected.sid && !injected.xsid">{{
               $t("popup.compatible")
@@ -62,6 +63,51 @@
             }}</span>
             <br />
             <h1 class="title is-2">{{ injected.dapp }}</h1>
+            <div v-if="tosign.message && tosign.tosign">
+              <div v-if="!showUnlock">
+                {{ $t("popup.tosign") }}:
+                <hr />
+                {{ tosign.message }}
+                <hr />
+                <b-button
+                  expanded
+                  v-on:click="showUnlock = true"
+                  type="is-success"
+                  >{{ $t("popup.sign") }}</b-button
+                >
+                <b-button
+                  expanded
+                  v-on:click="dismissTransaction"
+                  type="is-primary"
+                  >{{ $t("popup.dismiss") }}</b-button
+                >
+              </div>
+              <div v-if="showUnlock">
+                <hr />
+                <b-field :label="$t('popup.insertpassword')">
+                  <b-input
+                    type="password"
+                    v-model="password"
+                    password-reveal
+                  ></b-input>
+                </b-field>
+                <b-button
+                  expanded
+                  v-on:click="sendTransaction"
+                  type="is-success"
+                  >{{ $t("popup.sendtransaction") }}</b-button
+                >
+              </div>
+            </div>
+            <div v-if="!tosign.message || !tosign.tosign">
+              <b-button
+                v-if="injected.sid || injected.xsid"
+                expanded
+                v-on:click="disconnectIdentity"
+                type="is-primary"
+                >{{ $t("popup.disconnect") }}</b-button
+              >
+            </div>
           </div>
           <div v-if="showChange">
             <hr />
@@ -78,23 +124,20 @@
             type="is-primary"
             >{{ $t("popup.useidentity") }}</b-button
           >
-          <b-button
-            v-if="injected.sid || injected.xsid"
-            expanded
-            v-on:click="disconnectIdentity"
-            type="is-primary"
-            >{{ $t("popup.disconnect") }}</b-button
-          >
         </div>
       </div>
     </div>
-    <div v-if="wallet && showSwitch" style="text-align: left;">
-      <div class="text-center" style="margin-top:-15px">
-        <div v-on:click="toggleSwitch" style="position:absolute; top: 25px; left:15px">
-          <img src="/img/back.png" style="height:20px; cursor: pointer">
+    <div v-if="wallet && showSwitch" style="text-align: left">
+      <div class="text-center" style="margin-top: -15px">
+        <div
+          v-on:click="toggleSwitch"
+          style="position: absolute; top: 25px; left: 15px"
+        >
+          <img src="/img/back.png" style="height: 20px; cursor: pointer" />
         </div>
-        <b>{{ $t('popup.selectid') }}</b>
-      </div><hr>
+        <b>{{ $t("popup.selectid") }}</b>
+      </div>
+      <hr />
       <div
         v-for="identity in xsid"
         v-bind:key="identity.wallet"
@@ -118,7 +161,7 @@
             >{{ identity.xpub.substr(0, 10) }}...{{
               identity.xpub.substr(-10)
             }}</span
-          ><br><br>
+          ><br /><br />
         </div>
       </div>
       <div
@@ -144,7 +187,7 @@
             >{{ identity.address.substr(0, 10) }}...{{
               identity.address.substr(-10)
             }}</span
-          ><br><br>
+          ><br /><br />
         </div>
       </div>
     </div>
@@ -173,11 +216,13 @@ export default {
       created: false,
       showChange: false,
       showSwitch: false,
+      showUnlock: false,
       balance: 0,
       newSeed: "",
       wallet: "",
       password: "",
       passwordrepeat: "",
+      tosign: "",
       injected: "",
       mnemonic: "",
       label: "New Identity",
@@ -188,16 +233,21 @@ export default {
   async mounted() {
     const app = this;
     if (navigator.userAgent.indexOf("Firefox") === -1) {
-      if(chrome !== undefined && chrome.runtime !== undefined && chrome.runtime.getURL !== undefined){
+      if (
+        chrome !== undefined &&
+        chrome.runtime !== undefined &&
+        chrome.runtime.getURL !== undefined
+      ) {
         let url = chrome.runtime.getURL("/index.html");
-        app.standaloneURL = url + '#'
-      }else{
-        app.standaloneURL = '/#'
+        app.standaloneURL = url + "#";
+      } else {
+        app.standaloneURL = "/#";
       }
-    }else{
-      app.standaloneURL = 'index.html#'
+    } else {
+      app.standaloneURL = "index.html#";
     }
     app.injected = await app.dapp.check();
+    app.tosign = await app.dapp.tosign();
     if (
       app.injected !== undefined &&
       app.injected !== false &&
@@ -218,15 +268,7 @@ export default {
           app.wallet = await app.user.auth();
         }
       } else if (app.injected.xsid !== null) {
-        let SIDS = app.injected.xsid.split(":");
-        let check = await app.db.get("xsid", "xpub", SIDS[0]);
-        if (check.address !== undefined) {
-          app.wallet = await app.user.auth(app.injected.xsid);
-        } else {
-          app.injected.sid = "";
-          app.injected.xsid = "";
-          app.wallet = await app.user.auth();
-        }
+        app.wallet = await app.user.auth(app.injected.xsid);
       } else {
         app.injected.sid = "";
         app.injected.xsid = "";
@@ -247,9 +289,12 @@ export default {
       const app = this;
       app.sid = await app.db.get("wallet");
       app.xsid = await app.db.get("xsid");
-      for(let k in app.xsid){
-        let master = await app.scrypta.deriveKeyfromXPub(app.xsid[k].xpub, 'm/0')
-        app.xsid[k].master = master.pub
+      for (let k in app.xsid) {
+        let master = await app.scrypta.deriveKeyfromXPub(
+          app.xsid[k].xpub,
+          "m/0"
+        );
+        app.xsid[k].master = master.pub;
       }
       if (app.showSwitch === true) {
         app.showSwitch = false;
@@ -266,9 +311,84 @@ export default {
       }
       app.injected = await app.dapp.check();
     },
+    async sendTransaction() {
+      const app = this;
+      if (app.password !== undefined) {
+        let privkey = "";
+        let key;
+        let SIDS;
+        if (app.wallet !== false && app.wallet.sid !== undefined) {
+          key = await app.scrypta.readKey(app.password, app.wallet.sid);
+          if (key !== false) {
+            key.sid = app.wallet.sid;
+          }
+        } else if (app.wallet.xsid !== undefined) {
+          let xkey = await app.scrypta.readxKey(app.password, app.wallet.xsid);
+          if (xkey !== false) {
+            key = await app.scrypta.deriveKeyFromSeed(xkey.seed, "m/0");
+            let importkey = await app.scrypta.importPrivateKey(
+              key.prv,
+              app.password,
+              false
+            );
+            key.sid = importkey.walletstore;
+          }
+        }
+        if (key !== false) {
+          let SIDS = key.sid.split(":");
+          key.address = SIDS[0];
+          app.isSending = true;
+
+          let estimatedlength = app.tosign.tosign;
+          let fees = Math.ceil(app.tosign.tosign / 7500) * 0.001;
+          let balance = await app.scrypta.get("/balance/" + key.address);
+
+          if (balance.balance >= parseFloat(fees)) {
+            let signed = await app.scrypta.signRawTransaction(
+              app.tosign.tosign,
+              key.prv
+            );
+            let sent = await app.scrypta.sendRawTransaction(signed);
+            if (sent.length === 64) {
+              app.dapp.confirm(sent);
+              app.dapp.dismiss();
+              app.tosign = {};
+              app.$buefy.toast.open({
+                message: app.$t("popup.transactionsent"),
+                type: "is-success",
+              });
+            } else {
+              app.$buefy.toast.open({
+                message: app.$t("payments.transactionerror"),
+                type: "is-danger",
+              });
+            }
+          } else {
+            app.isSending = false;
+            app.$buefy.toast.open({
+              message: app.$t("payments.notenoughfunds"),
+              type: "is-danger",
+            });
+          }
+        } else {
+          app.isSending = false;
+          app.$buefy.toast.open({
+            message: app.$t("payments.wrongpassword"),
+            type: "is-danger",
+          });
+        }
+      }
+    },
+    async dismissTransaction() {
+      const app = this;
+      app.tosign = {};
+      app.dapp.dismiss();
+    },
     async disconnectIdentity() {
       const app = this;
       app.dapp.disconnect();
+      app.dapp.dismiss();
+      app.tosign = {};
       app.injected = await app.dapp.check();
     },
     async updateIdentity() {
@@ -304,8 +424,10 @@ export default {
       app.wallet = await app.user.auth();
       let balance = await app.scrypta.get("/balance/" + app.wallet.master);
       app.balance = balance.balance;
-      app.useIdentity()
-      app.toggleSwitch()
+      app.dapp.dismiss();
+      app.tosign = {};
+      app.useIdentity();
+      app.toggleSwitch();
     },
   },
 };
@@ -323,8 +445,8 @@ body {
 .popup {
   min-width: 350px;
   width: 100%;
-  margin-bottom:-20px;
-  padding-bottom:0;
+  margin-bottom: -20px;
+  padding-bottom: 0;
   text-align: center;
 }
 .card,
